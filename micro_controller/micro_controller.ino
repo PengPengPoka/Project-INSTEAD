@@ -7,6 +7,7 @@ HardwareSerial Serial2(PA10, PA9);
 
 void setup() {
   Serial2.begin(115200);
+  analogReadResolution(16);
   // pinMode(PA2, OUTPUT);
   pinMode(POT1, INPUT);
   pinMode(POT2, INPUT);
