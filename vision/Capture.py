@@ -8,12 +8,12 @@ def capture(frame):     # capture function
     cv.imwrite((img_name + "." + extention), frame)
     print("image " + img_name + "." + extention + " has been created")
     
-def resolutionSetting(cap): # resolution setting function
-    height = int(input("frame height: "))
-    width = int(input("frame width: "))
+# def resolutionSetting(cap): # resolution setting function
+#     height = int(input("frame height: "))
+#     width = int(input("frame width: "))
     
-    cap.set(cv.CAP_PROP_FRAME_HEIGHT,height)
-    cap.set(cv.CAP_PROP_FRAME_WIDTH,width)
+#     cap.set(cv.CAP_PROP_FRAME_HEIGHT,height)
+#     cap.set(cv.CAP_PROP_FRAME_WIDTH,width)
 
 def exposureSetting(cap):
     expo = int(input("exposure value: "))
@@ -50,13 +50,13 @@ def WBSetting(cap):
     cap.set(cv.CAP_PROP_WB_TEMPERATURE,wb)
 
 def main():
-    cap = cv.VideoCapture(0)    # ambil index kamera
+    cap = cv.VideoCapture(1,cv.CAP_DSHOW)    # ambil index kamera
 
-    resolutionSetting(cap)      # setting resolusi kamera
-    cap.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
-    cap.set(cv.CAP_PROP_AUTO_WB,0)
+    # resolutionSetting(cap)      # setting resolusi kamera
+    # cap.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
+    # cap.set(cv.CAP_PROP_AUTO_WB,0)
     cv.namedWindow("webcam")    # window webcam
-    cap.set(cv.CAP_PROP_SETTINGS,1)
+    # cap.set(cv.CAP_PROP_SETTINGS,1)
     
     
     while cap.isOpened():
@@ -112,7 +112,7 @@ def main():
             t1 = threading.Thread(target=capture,args=(frame,))     # thread buat capture gambar
             t1.start()
         
-        cap.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
+        # cap.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
         # if tExposure.is_alive() or tFocus.is_alive() == True:
         #     tExposure.join()
         #     tFocus.join()

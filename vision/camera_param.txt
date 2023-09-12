@@ -1,0 +1,2 @@
+focus=250
+exposure = -5

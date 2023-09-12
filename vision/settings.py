@@ -1,9 +1,9 @@
 import cv2 as cv
 
 def main():
-    cap = cv.VideoCapture(0,cv.CAP_V4L)
-    cap.set(3,640)
-    cap.set(4,480)
+    cap = cv.VideoCapture(1,cv.CAP_DSHOW)
+    # cap.set(3,640)
+    # cap.set(4,480)
     
     cap.set(cv.CAP_PROP_SETTINGS,1)
     
