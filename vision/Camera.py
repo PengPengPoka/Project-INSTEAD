@@ -1,4 +1,5 @@
 import cv2 as cv
+import os
 
 class Camera:
     def __init__(self):
@@ -12,6 +13,26 @@ class Camera:
                 value = parts[1].strip()
 
                 self.cam_setting[variable] = int(value)
+
+    def WriteSetting(self):
+        filename = str(input("file name: "))
+
+        self.cam_setting['brightness'] = self.brightness
+        self.cam_setting['contrast'] = self.contrast
+        self.cam_setting['saturation'] = self.saturation
+        self.cam_setting['sharpness'] = self.sharpness
+        self.cam_setting['white_balance'] = self.white_balance
+        self.cam_setting['gain'] = self.gain
+        self.cam_setting['zoom'] = self.zoom
+        self.cam_setting['focus'] = self.focus
+        self.cam_setting['exposure'] = self.exposure
+        self.cam_setting['pan'] = self.pan
+        self.cam_setting['tilt'] = self.tilt
+
+        with open(filename, 'w') as file:
+            for var, value in self.cam_setting.items():
+                line = f"{var}={value}\n"
+                file.write(line)
 
     def getSettings(self):
         self.brightness = self.cam_setting['brightness']
@@ -127,7 +148,8 @@ class Camera:
 
 def main():
     cam = Camera()
-    path = "C:\\Users\\ADMIN\\Repositories\\Project-INSTEAD\\vision\\default_param.txt"
+    home = os.path.expanduser("~")
+    path = home + "\\Repositories\\Project-INSTEAD\\vision\\default_param.txt"
     cam.OpenSettings(path)
 
     cap = cv.VideoCapture(0, cv.CAP_DSHOW)
@@ -156,6 +178,10 @@ def main():
         elif key == 99:
             print("C key pressed. Entering manual mode setting")
             cam.setManualSettings(cap)
+
+        elif key == 115:
+            print("S key pressed. Saving camera setting")
+            cam.WriteSetting()
 
 if __name__ == "__main__":
     main()
