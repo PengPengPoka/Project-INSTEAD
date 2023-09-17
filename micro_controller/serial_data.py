@@ -3,14 +3,14 @@ import datetime
 import csv
 
 ser = serial.Serial('COM7', baudrate=115200)  # usb port settings
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
 csv_filename = f"sensor_data_{timestamp}.csv"
 
 
 def request_data(delay, amount):
     data_to_send = f"{delay}#{amount}\n"
     ser.write(data_to_send.encode())
-    with open(csv_filename, mode='a', newline='') as csv_file:
+    with open(csv_filename, mode='w', newline='') as csv_file:
         for i in range(int(amount)):
             serial_data = ser.readline().decode('ascii')    # read serial data from usb
             split_values = serial_data.split("#")   # split values by #
