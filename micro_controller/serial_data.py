@@ -1,8 +1,10 @@
 import serial
+import datetime
 import csv
 
 ser = serial.Serial('COM7', baudrate=115200)  # usb port settings
-csv_filename = "sensor_data.csv"
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+csv_filename = f"sensor_data_{timestamp}.csv"
 
 
 def request_data(delay, amount):
