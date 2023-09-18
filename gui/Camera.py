@@ -77,6 +77,35 @@ class Camera:
     def setManualSettings(self, device, variable, value):
         device.set(variable, value)
 
+    def applyConfig(self, settings, device):
+        self.AutoOff(device)
+        self.brightness = settings['brightness']
+        self.contrast = settings['contrast']
+        self.saturation = settings['saturation']
+        self.sharpness = settings['sharpness']
+        self.white_balance = settings['white_balance']
+        self.gain = settings['gain']
+        self.zoom = settings['zoom']
+        self.focus = settings['focus'] 
+        self.exposure = settings['exposure']
+        self.pan = settings['pan']
+        self.tilt = settings['tilt']
+
+        device.set(cv.CAP_PROP_BRIGHTNESS, self.brightness)
+        device.set(cv.CAP_PROP_CONTRAST, self.contrast)
+        device.set(cv.CAP_PROP_SATURATION, self.saturation)
+        device.set(cv.CAP_PROP_SHARPNESS, self.sharpness)
+        device.set(cv.CAP_PROP_WB_TEMPERATURE, self.white_balance)
+        device.set(cv.CAP_PROP_GAIN, self.gain)
+        device.set(cv.CAP_PROP_ZOOM, self.zoom)
+        device.set(cv.CAP_PROP_FOCUS, self.focus)
+        device.set(cv.CAP_PROP_EXPOSURE, self.exposure)
+        device.set(cv.CAP_PROP_PAN, self.pan)
+        device.set(cv.CAP_PROP_TILT, self.tilt)
+
+        print('Camera parameters applied!')
+
+
 
 def main():
     cam = Camera()

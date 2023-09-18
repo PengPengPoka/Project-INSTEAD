@@ -19,6 +19,7 @@ class SecondWindow(QtWidgets.QDialog):
 
     def initUI(self):
         self.cam = Camera()
+        self.main = Ui_MainWindow()
 
         self.frame= QFrame()
         # self.central_widget = QTabWidget()
@@ -93,6 +94,10 @@ class SecondWindow(QtWidgets.QDialog):
 
         self.saveButton.clicked.connect(self.saveSettings)
         self.saveasButton.clicked.connect(self.saveSettingsAs)
+        self.applyButton = self.findChild(QPushButton, 'applyButton')
+        self.applyButton.clicked.connect(self.applyConfig)
+        self.cancelButton.clicked.connect(self.close)
+        
 
     def updateExposureLabel(self, value):
         self.label_exposure.setText(f"Exposure: {value}")
@@ -146,20 +151,10 @@ class SecondWindow(QtWidgets.QDialog):
         with open('default_param.txt', 'w') as configfile:
             config.write(configfile)
 
-        notification = QMessageBox(self)
-        notification.setWindowTitle("Notification")
-        notification.setIcon(QMessageBox.Information)  
-        notification.setText("Saved!")
-        notification.addButton(QMessageBox.Ok)
-        notification.exec_()          
+        import time
+        time.sleep(2) 
+        self.show_notification_dialog('Camera parameters saved successfully!')
 
-    def saveSettings(self):
-        config = configparser.ConfigParser()
-        config['CameraSettings'] = self.slider_values
-
-        with open('default_param.txt', 'w') as configfile:
-            config.write(configfile)
-        
 
     def saveSettingsAs(self):
         options = QFileDialog.Options()
@@ -173,13 +168,46 @@ class SecondWindow(QtWidgets.QDialog):
             with open(file_name, 'w') as configfile:
                 config.write(configfile)
 
-    # def notificationSaved(self):
-    #     notification = QMessageBox(self)
-    #     notification.setWindowTitle("Notifikatzion")
-    #     notification.setIcon(QMessageBox.Information)  
-    #     notification.setText("Saved!")
-    #     notification.addButton(QMessageBox.Ok)
-    #     notification.exec_()  
+    def applyConfig(self):
+        # self.cam.AutoOff(device)
+        # self.cam.getSettings()
+        # self.cam.setSettings(device)
+        
+        # device.set(cv.CAP_PROP_BRIGHTNESS, self.cam_setting['brightness'])
+        # device.set(cv.CAP_PROP_CONTRAST, self.cam_setting['contrast'])
+        # device.set(cv.CAP_PROP_SATURATION, self.cam_setting['saturation'])
+        # device.set(cv.CAP_PROP_SHARPNESS, self.cam_setting['sharpness'])
+        # device.set(cv.CAP_PROP_WB_TEMPERATURE, self.cam_setting['white_balance'])
+        # device.set(cv.CAP_PROP_GAIN, self.cam_setting['gain'])
+        # device.set(cv.CAP_PROP_ZOOM, self.cam_setting['zoom'])
+        # device.set(cv.CAP_PROP_FOCUS, self.cam_setting['focus'])
+        # device.set(cv.CAP_PROP_EXPOSURE, self.cam_setting['exposure'])
+        # device.set(cv.CAP_PROP_PAN, self.cam_setting['pan'])
+        # device.set(cv.CAP_PROP_TILT, self.cam_setting['tilt'])
+
+        # self.cam.setSettings(self.slider_values)  
+        # self.cam.setSettings(device)
+
+        # Ensure the camera is opened and a valid device is available
+        if self.main.video_capture.isOpened():
+            # Call the applyConfig method with the current slider values
+            self.cam.applyConfig(self.slider_values, self.main.video_capture)
+        else:
+            print("No capture device")
+
+        self.show_notification_dialog('Camera parameters applied!')
+        
+
+    def show_notification_dialog(self, message):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('Notification')
+
+        layout = QVBoxLayout()
+        label = QLabel(message)
+        layout.addWidget(label)
+        dialog.setLayout(layout)
+
+        dialog.exec_() 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
