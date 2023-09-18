@@ -51,6 +51,7 @@ class Camera:
         device.set(cv.CAP_PROP_AUTOFOCUS,0)
         device.set(cv.CAP_PROP_AUTO_WB,0)
         device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
+        device.set(cv.CAP_PROP_AUTO_WB,1)
 
     def setSettings(self, device):
         self.AutoOff(device)
