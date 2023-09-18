@@ -7,13 +7,18 @@ from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
 import configparser
 from PyQt5 import uic, QtWidgets
 import cv2 as cv
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
+import datetime
+import csv
+import serial
 
 from Camera import Camera
 
 class SecondWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/media/Backup/Teh/fix/pasti/config.ui', self)
+        uic.loadUi('/media/Backup/Teh/fix banget/config.ui', self)
         self.initUI()
         self.cam_setting = {}
 
@@ -168,7 +173,26 @@ class SecondWindow(QtWidgets.QDialog):
             with open(file_name, 'w') as configfile:
                 config.write(configfile)
 
+    # def setCameraProperties(self,device):
+    # Ensure the camera is opened and a valid device is available
+        if self.video_capture.isOpened():
+            # self.video_capture.set(cv.CAP_PROP_AUTO_EXPOSURE, 0)  # Turn off auto exposure
+            # self.video_capture.set(cv.CAP_PROP_AUTO_GAIN, 0)  # Turn off auto gain
+            # self.video_capture.set(cv.CAP_PROP_AUTO_WHITE_BALANCE, 0)  # Turn off auto white balance
+
+            # # Set your desired properties here, e.g., exposure, gain, white balance, etc.
+            # self.video_capture.set(cv.CAP_PROP_EXPOSURE, self.slider_values['exposure'])
+            # self.video_capture.set(cv.CAP_PROP_GAIN, self.slider_values['gain'])
+            # self.video_capture.set(cv.CAP_PROP_WHITE_BALANCE_BLUE_U, self.slider_values['white_balance'])
+            device.set(cv.CAP_PROP_AUTOFOCUS,0)
+            device.set(cv.CAP_PROP_AUTO_WB,0)
+            device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
+            self.show_notification_dialog('Camera properties applied!')
+        else:
+            print("No capture device")
+
     def applyConfig(self):
+        # self.setCameraProperties()
         # self.cam.AutoOff(device)
         # self.cam.getSettings()
         # self.cam.setSettings(device)
@@ -212,9 +236,10 @@ class SecondWindow(QtWidgets.QDialog):
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/media/Backup/Teh/vision.ui', self)
+        uic.loadUi('/media/Backup/Teh/fix banget/vision.ui', self)
         self.initUI()
         self.cam_setting = {}
+        self.collect_data = True #data collectin control flag
 
     def initUI(self):
         self.cam = Camera()
@@ -249,6 +274,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pause_button.clicked.connect(self.pause_action)
         self.reset_button.clicked.connect(self.reset_action)
         self.camConfig.clicked.connect(self.config_action)
+        self.startSampling.clicked.connect(self.start_collection)
+        self.stopSampling.clicked.connect(self.stop_collection)
+
+
+
+        self.log_display.setReadOnly(True)
 
         self.timer2 = QTimer(self)
         self.timer2.timeout.connect(self.showTime)
@@ -260,6 +291,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.cam.OpenSettings(self.path)
 
         self.video_capture = cv.VideoCapture(0, cv.CAP_ANY)
+        # self.setCameraProperties(device)
 
         if not self.video_capture.isOpened():
             self.showNotDetectedDialog()
@@ -295,7 +327,55 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.radioFile1.clicked.connect(lambda: self.setPreferredExtension("jpg"))
         self.radioFile2.clicked.connect(lambda: self.setPreferredExtension(""))
 
+    # def setCameraProperties(self,device):
+    # Ensure the camera is opened and a valid device is available
+        # if self.video_capture.isOpened():
+            # self.video_capture.set(cv.CAP_PROP_AUTO_EXPOSURE, 0)  # Turn off auto exposure
+            # # self.video_capture.set(cv.CAP_PROP_AUTO_GAIN, 0)  # Turn off auto gain
+            # self.video_capture.set(cv.CAP_PROP_AUTO_WHITE_BALANCE, 0)  # Turn off auto white balance
 
+            # # Set your desired properties here, e.g., exposure, gain, white balance, etc.
+            # self.video_capture.set(cv.CAP_PROP_EXPOSURE, self.slider_values['exposure'])
+            # # self.video_capture.set(cv.CAP_PROP_GAIN, self.slider_values['gain'])
+            # self.video_capture.set(cv.CAP_PROP_WHITE_BALANCE_BLUE_U, self.slider_values['white_balance'])
+
+        #     device.set(cv.CAP_PROP_AUTOFOCUS,0)
+        #     device.set(cv.CAP_PROP_AUTO_WB,0)
+        #     device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)            
+
+        #     self.show_notification_dialog('Camera properties applied!')
+        # else:
+        #     print("No capture device")
+
+
+    def start_collection(self):
+        delay = self.delay_input.text()
+        amount = self.amount_input.text()
+        self.log_display.clear()
+
+        try:
+            ser = serial.Serial('COM7', baudrate=115200)
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+            csv_filename = f"sensor_data_{timestamp}.csv"
+
+            with open(csv_filename, mode='w', newline='') as csv_file:
+                for i in range(int(amount)):
+                    if not self.collect_data:  # cek tadi tombol stopnya kepencet ga
+                        self.log_display.append("Data collection stopped.")
+                        break  # Exit  loop
+
+                    serial_data = ser.readline().decode('ascii')
+                    split_values = serial_data.split("#")
+                    int_values = [int(value) for value in split_values]
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(int_values)
+                    self.log_display.append(f"Collected data: {int_values}")
+        except Exception as e:
+            self.log_display.append(f"Error: {str(e)}")
+
+    def stop_collection(self):
+        self.collect_data = False  
+        self.log_display.append("stopping data collection")
 
     def showNotDetectedDialog(self):
         warning_box = QMessageBox()
@@ -305,16 +385,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         warning_box.setStandardButtons(QMessageBox.Ok)
         warning_box.exec_()
 
-
     def showFailureDialog(self):
-        # Create a warning message box
         warning_box = QMessageBox()
         warning_box.setIcon(QMessageBox.Warning)
         warning_box.setWindowTitle('Warning!')
         warning_box.setText('Capture has failed!')
         warning_box.setStandardButtons(QMessageBox.Ok)
 
-        # Execute the warning message box
         warning_box.exec_()
 
     def showTime(self):
