@@ -439,7 +439,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def togglePlayback(self):
         if self.playback:
-            self.timer.stop()
+            self.timer.stop() 
         else:
             self.timer.start(30)
         self.playback = not self.playback
