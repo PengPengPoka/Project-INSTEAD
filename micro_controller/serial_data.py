@@ -1,15 +1,18 @@
 import serial
 import datetime
 import csv
+import multiprocessing
 
 ser = serial.Serial('COM7', baudrate=115200)  # usb port settings
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-csv_filename = f"sensor_data_{timestamp}.csv"
 
 
 def request_data(delay, amount):
-    data_to_send = f"{delay}#{amount}\n"
-    ser.write(data_to_send.encode())
+    data_to_send = f"{delay}#{amount}\n"  # data format
+    ser.write(data_to_send.encode())  # send data to usb
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    csv_filename = f"sensor_data_{timestamp}.csv"
+
     with open(csv_filename, mode='w', newline='') as csv_file:
         for i in range(int(amount)):
             serial_data = ser.readline().decode('ascii')    # read serial data from usb
@@ -20,8 +23,8 @@ def request_data(delay, amount):
             csv_writer.writerow(int_values)  # append data to csv file
 
 
-while 1:
+if __name__ == "__main__":
     delay = input("Delay (ms): ")  # input delay from user
     amount = input("How many data? ")  # input amount from user
-    # print(delay+amount)
-    request_data(delay, amount)
+    p1 = multiprocessing.Process(target=request_data, args=(delay, amount))
+    p1.start()
