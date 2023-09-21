@@ -11,9 +11,36 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
 import datetime
 import csv
-import serial
+import serial, threading
 
 from Camera import Camera
+
+class DataCollectionThread(threading.Thread):
+    def __init__(self, delay, amount):
+        super().__init__()
+        self.delay = delay
+        self.amount = amount
+        self.collect_data = True
+        self.csv_filename = None
+
+    def run(self):
+        try:
+            ser = serial.Serial('COM7', baudrate=115200)
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+            self.csv_filename = f"sensor_data_{timestamp}.csv"
+
+            with open(self.csv_filename, mode='w', newline='') as csv_file:
+                for i in range(int(self.amount)):
+                    if not self.collect_data:
+                        break 
+
+                    serial_data = ser.readline().decode('ascii')
+                    split_values = serial_data.split("#")
+                    int_values = [int(value) for value in split_values]
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(int_values)
+        except Exception as e:
+            print(f"Error: {str(e)}")
 
 class SecondWindow(QtWidgets.QDialog):
     def __init__(self):
@@ -21,6 +48,7 @@ class SecondWindow(QtWidgets.QDialog):
         uic.loadUi('/media/Backup/Teh/fix banget/config.ui', self)
         self.initUI()
         self.cam_setting = {}
+        
 
     def initUI(self):
         self.cam = Camera()
@@ -107,47 +135,96 @@ class SecondWindow(QtWidgets.QDialog):
     def updateExposureLabel(self, value):
         self.label_exposure.setText(f"Exposure: {value}")
         self.slider_values['exposure'] = value
+        self.applyCameraSetting('exposure',value)
 
 
     def updateSaturationLabel(self, value):
         self.label_saturation.setText(f"Saturation: {value}")
         self.slider_values['saturation'] = value
+        self.applyCameraSetting('exposure',value)
+
 
     def updateWhiteBalanceLabel(self, value):
         self.label_whitebalance.setText(f"Whitebalance: {value}")
         self.slider_values['white_balance'] = value
+        self.applyCameraSetting('whitebalance',value)
+
 
     def updateSharpnessLabel(self, value):
         self.label_sharpness.setText(f"Sharpness: {value}")
         self.slider_values['sharpness'] = value
+        self.applyCameraSetting('sharpness',value)
+
 
     def updateGainLabel(self, value):
         self.label_gain.setText(f"Gain: {value}")
         self.slider_values['gain'] = value
+        self.applyCameraSetting('gain',value)
+
 
     def updateZoomLabel(self, value):
         self.label_zoom.setText(f"Zoom: {value}")
         self.slider_values['zoom'] = value
+        self.applyCameraSetting('zoom',value)
+
 
     def updateFocusLabel(self, value):
         self.label_focus.setText(f"Focus: {value}")
         self.slider_values['focus'] = value
+        self.applyCameraSetting('focus',value)
+
 
     def updatePanLabel(self, value):
         self.label_pan.setText(f"Pan: {value}")
         self.slider_values['pan'] = value
+        self.applyCameraSetting('pan',value)
+
 
     def updateTiltLabel(self, value):
         self.label_tilt.setText(f"Tilt: {value}")
         self.slider_values['tilt'] = value
+        self.applyCameraSetting('tilt',value)
+
 
     def updateBrightnessLabel(self, value):
         self.label_brightness.setText(f"Brightness: {value}")
         self.slider_values['brightness'] = value
+        self.applyCameraSetting('brightness',value)
+
 
     def updateContrastLabel(self, value):
         self.label_contrast.setText(f"Contrast: {value}")
         self.slider_values['contrast'] = value
+        self.applyCameraSetting('contrast',value)
+    
+    def applyCameraSetting(self, parameter_name, value):
+        if parameter_name == 'exposure':
+            self.main.video_capture.set(cv.CAP_PROP_EXPOSURE, value)
+        elif parameter_name == 'brightness':
+            self.main.video_capture.set(cv.CAP_PROP_BRIGHTNESS, value)
+        elif parameter_name == 'contrast':
+            self.main.video_capture.set(cv.CAP_PROP_CONTRAST, value)
+        elif parameter_name == 'saturation':
+            self.main.video_capture.set(cv.CAP_PROP_SATURATION, value)
+        elif parameter_name == 'sharpness':
+            self.main.video_capture.set(cv.CAP_PROP_SHARPNESS, value)
+        elif parameter_name == 'whitebalance':
+            self.main.video_capture.set(cv.CAP_PROP_WB_TEMPERATURE, value)
+        elif parameter_name == 'gain':
+            self.main.video_capture.set(cv.CAP_PROP_GAIN, value)
+        elif parameter_name == 'zoom':
+            self.main.video_capture.set(cv.CAP_PROP_ZOOM, value)
+        elif parameter_name == 'focus':
+            self.main.video_capture.set(cv.CAP_PROP_FOCUS, value)
+        elif parameter_name == 'pan':
+            self.main.video_capture.set(cv.CAP_PROP_PAN, value)
+        elif parameter_name == 'tilt':
+            self.main.video_capture.set(cv.CAP_PROP_TILT, value)
+    
+    # Update the corresponding variable in self.slider_values
+        self.slider_values[parameter_name] = value
+
+
 
     def saveSettings(self):
         config = configparser.ConfigParser()
@@ -252,13 +329,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.camera_layout = QVBoxLayout(self.camera_frame)
         self.layout.addWidget(self.camera_frame)
         
-        self.radioButton0 = QRadioButton('Camera 0')
-        self.radioButton1 = QRadioButton('Camera 1')
-        self.radioButton2 = QRadioButton('Camera 2')
+        # self.radioButton0 = QRadioButton('Camera 0')
+        # self.radioButton1 = QRadioButton('Camera 1')
+        # self.radioButton2 = QRadioButton('Camera 2')
 
-        self.camera_layout.addWidget(self.radioButton0)
-        self.camera_layout.addWidget(self.radioButton1)
-        self.camera_layout.addWidget(self.radioButton2)
+        # self.camera_layout.addWidget(self.radioButton0)
+        # self.camera_layout.addWidget(self.radioButton1)
+        # self.camera_layout.addWidget(self.radioButton2)
 
         self.startButton.clicked.connect(self.togglePlayback)
         self.snapButton.clicked.connect(self.takeScreenshot)
@@ -276,6 +353,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.camConfig.clicked.connect(self.config_action)
         self.startSampling.clicked.connect(self.start_collection)
         self.stopSampling.clicked.connect(self.stop_collection)
+        self.refreshScreen.clicked.connect(self.clearSerial)
+        self.saveSensor.clicked.connect(self.save_collection)
+        self.clearCropped.clicked.connect(self.clearCrop)
 
 
 
@@ -305,27 +385,30 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.radioButton1 = QRadioButton("Camera 1")
         # self.radioButton2 = QRadioButton("Camera 2")
 
-        self.radioFile0 = QRadioButton("PNG")
-        self.radioFile1 = QRadioButton("JPG")
-        self.radioFile2 = QRadioButton("All Files") 
+        # self.radioFile0 = QRadioButton("PNG")
+        # self.radioFile1 = QRadioButton("JPG")
+        # self.radioFile2 = QRadioButton("All Files") 
 
         # Add a file_layout here
         self.file_frame = QFrame()
         self.file_layout = QVBoxLayout(self.file_frame)
         self.layout.addWidget(self.file_frame)
 
-        self.file_layout.addWidget(self.radioFile0)
-        self.file_layout.addWidget(self.radioFile1)
-        self.file_layout.addWidget(self.radioFile2)
+        # self.file_layout.addWidget(self.radioFile0)
+        # self.file_layout.addWidget(self.radioFile1)
+        # self.file_layout.addWidget(self.radioFile2)
 
         # Connect radio button signals
         self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
         self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
 
-        self.radioFile0.clicked.connect(lambda: self.setPreferredExtension("png"))
-        self.radioFile1.clicked.connect(lambda: self.setPreferredExtension("jpg"))
-        self.radioFile2.clicked.connect(lambda: self.setPreferredExtension(""))
+        # self.radioFile0.clicked.connect(lambda: self.setPreferredExtension("png"))
+        # self.radioFile1.clicked.connect(lambda: self.setPreferredExtension("jpg"))
+        # self.radioFile2.clicked.connect(lambda: self.setPreferredExtension(""))
+
+        # self.screenshot_label = QLabel(self.tab_5)
+        
 
     # def setCameraProperties(self,device):
     # Ensure the camera is opened and a valid device is available
@@ -347,10 +430,82 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # else:
         #     print("No capture device")
 
+    def clearSerial(self):
+        self.log_display.clear()
+
+    def clearCrop(self):
+        self.cropShow.clear()
 
     def start_collection(self):
-        delay = self.delay_input.text()
-        amount = self.amount_input.text()
+        # delay = self.delay_input.text()
+        # amount = self.amount_input.text()
+        # self.log_display.clear()
+
+        # try:
+        #     ser = serial.Serial('COM7', baudrate=115200)
+        #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        #     csv_filename = f"sensor_data_{timestamp}.csv"
+
+        #     with open(csv_filename, mode='w', newline='') as csv_file:
+        #         for i in range(int(amount)):
+        #             if not self.collect_data:  # cek tadi tombol stopnya kepencet ga
+        #                 self.log_display.append("Data collection stopped.")
+        #                 break  # Exit  loop
+
+        #             serial_data = ser.readline().decode('ascii')
+        #             split_values = serial_data.split("#")
+        #             int_values = [int(value) for value in split_values]
+        #             csv_writer = csv.writer(csv_file)
+        #             csv_writer.writerow(int_values)
+        #             self.log_display.append(f"Collected data: {int_values}")
+        # except Exception as e:
+        #     self.log_display.append(f"Error: {str(e)}")
+
+        # delay = self.delay_input.text()
+        # amount = self.amount_input.text()
+        # self.log_display.clear()
+
+        # try:
+        #     ser = serial.Serial('COM7', baudrate=115200)
+        #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        #     csv_filename = f"sensor_data_{timestamp}.csv"
+
+        #     with open(csv_filename, mode='w', newline='') as csv_file:
+        #         for i in range(int(amount)):
+        #             if not self.collect_data:  
+        #                 self.log_display.append("Data collection stopped.")
+        #                 break 
+
+        #             serial_data = ser.readline().decode('ascii')
+        #             split_values = serial_data.split("#")
+        #             int_values = [int(value) for value in split_values]
+        #             csv_writer = csv.writer(csv_file)
+        #             csv_writer.writerow(int_values)
+        #             self.log_display.append(f"Collected data: {int_values}")
+        # except Exception as e:
+        #     self.log_display.append(f"Error: {str(e)}")
+
+        # delay = self.delay_input.text()
+        # amount = self.amount_input.text()
+        # self.log_display.clear()
+
+        # self.data_collection_thread = DataCollectionThread(delay, amount)
+        # self.data_collection_thread.start()
+
+        #----
+        delay_text = self.delay_input.text()
+        amount_text = self.amount_input.text()
+
+        if not delay_text:
+            delay_text = "500"  # Default delay of 500 milliseconds
+
+        if not amount_text:
+            amount_text = "360"  # Default amount of 360 data points
+
+        delay = int(delay_text)
+        amount = int(amount_text)
+        # delay = self.delay_input.text()
+        # amount = self.amount_input.text()
         self.log_display.clear()
 
         try:
@@ -359,23 +514,62 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             csv_filename = f"sensor_data_{timestamp}.csv"
 
             with open(csv_filename, mode='w', newline='') as csv_file:
+                csv_writer = csv.writer(csv_file)
+                
+                titles = ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5', 'Sensor 6']
+                csv_writer.writerow(titles)
+                
                 for i in range(int(amount)):
-                    if not self.collect_data:  # cek tadi tombol stopnya kepencet ga
+                    if not self.collect_data:
                         self.log_display.append("Data collection stopped.")
-                        break  # Exit  loop
-
+                        break
+                    
                     serial_data = ser.readline().decode('ascii')
                     split_values = serial_data.split("#")
                     int_values = [int(value) for value in split_values]
-                    csv_writer = csv.writer(csv_file)
+                    
                     csv_writer.writerow(int_values)
                     self.log_display.append(f"Collected data: {int_values}")
         except Exception as e:
             self.log_display.append(f"Error: {str(e)}")
 
+
     def stop_collection(self):
         self.collect_data = False  
         self.log_display.append("stopping data collection")
+    
+    def save_collection(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        csv_filename, _ = QFileDialog.getSaveFileName(self, "Save Data", "", "CSV Files (*.csv);;All Files (*)", options=options)
+
+        if csv_filename:
+            try:
+                ser = serial.Serial('COM7', baudrate=115200)
+                with open(csv_filename, mode='w', newline='') as csv_file:
+                    while True:
+                        if not self.collect_data:  
+                            self.log_display.append("Data collection stopped.")
+                            break 
+
+                        serial_data = ser.readline().decode('ascii')
+                        split_values = serial_data.split("#")
+                        int_values = [int(value) for value in split_values]
+                        csv_writer = csv.writer(csv_file)
+                        csv_writer.writerow(int_values)
+                        self.log_display.append(f"Collected data: {int_values}")
+            except Exception as e:
+                self.log_display.append(f"Error: {str(e)}")
+
+        # if self.data_collection_thread and self.data_collection_thread.csv_filename:
+        #     options = QFileDialog.Options()
+        #     options |= QFileDialog.DontUseNativeDialog
+        #     csv_filename, _ = QFileDialog.getSaveFileName(self, "Save Data", "", "CSV Files (*.csv);;All Files (*)", options=options)
+
+        #     if csv_filename:
+        #         import shutil
+        #         shutil.move(self.data_collection_thread.csv_filename, csv_filename)
+        #         self.log_display.append(f"Data saved as {csv_filename}")
 
     def showNotDetectedDialog(self):
         warning_box = QMessageBox()
@@ -439,19 +633,43 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def togglePlayback(self):
         if self.playback:
-            self.timer.stop() 
+            self.timer.stop()
         else:
             self.timer.start(30)
         self.playback = not self.playback
 
     def takeScreenshot(self):
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        # # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", f"{self.preferred_extension.upper()} Files (*.{self.preferred_extension});;All Files (*)", options=options)
+        # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "JPEG Files (*.jpg);;All Files (*)", options=options)
+
+        # cv.imwrite(file_name, image)
+        # #filename, array
+
+        # if file_name:
+        #     print(f"Image saved as {file_name}")
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", f"{self.preferred_extension.upper()} Files (*.{self.preferred_extension});;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "JPEG Files (*.jpg);;All Files (*)", options=options)
+        extention = ".jpg"
 
         if file_name:
+            ret, frame = self.video_capture.read()
+            if ret:
+                cv.imwrite((file_name+extention), frame)
             print(f"Image saved as {file_name}")
+             
+            screenshot_pixmap = QPixmap(file_name + extention)
+            self.cropShow.setPixmap(screenshot_pixmap)
 
+        # screenshot_pixmap = QPixmap(file_name + extension)
+        # screenshot_label.setPixmap(screenshot_pixmap)
+
+        # # Show the second frame
+        # second_frame.show()
+        
     def changeCameraIndex(self, index):
         self.video_capture.release()
         self.video_capture = cv.VideoCapture(index)
