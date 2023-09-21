@@ -25,7 +25,7 @@ void setup() {
 void loop() {
   if (Serial2.available()) {
     String received_data = Serial2.readStringUntil('\n');
-
+    Serial2.flush();
     int received_values[9999];
     int value_index = 0;
     char separator = '#';
