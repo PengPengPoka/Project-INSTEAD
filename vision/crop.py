@@ -20,8 +20,8 @@ def main():
             print(" pixel [{}] at {}, {}".format(pixel, x, y))
 
     t2 = time.time()
-
     Time = t2-t1
+    
     print("Pixel iteration: {}".format(Time))
 
     cv.imshow("teh", img)
