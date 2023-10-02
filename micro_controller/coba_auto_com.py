@@ -27,4 +27,3 @@ for i in range(amount):
     split_values = serial_data.split("#")   # split values by #
     int_values = [int(value) for value in split_values]
     print(int_values)  # Output: [123, 456, 789]
-
