@@ -114,7 +114,7 @@ def main():
     path = 'media/Backup/Teh/teststack/default_param.txt'
     cam.OpenSettings(path)
 
-    cap = cv.VideoCapture(0, cv.CAP_V4L)
+    cap = cv.VideoCapture(0, cv.CAP_DSHOW)
 
     if not cap.isOpened():
         print("No capture device")

@@ -49,7 +49,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>20</y>
+      <y>10</y>
       <width>1471</width>
       <height>751</height>
      </rect>
@@ -80,8 +80,8 @@
      <widget class="QPushButton" name="startButton">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>200</y>
+        <x>730</x>
+        <y>230</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -93,8 +93,8 @@
      <widget class="QPushButton" name="snapButton">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>240</y>
+        <x>730</x>
+        <y>270</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -106,8 +106,8 @@
      <widget class="QPushButton" name="camConfig">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>280</y>
+        <x>730</x>
+        <y>310</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -119,8 +119,8 @@
      <widget class="QLabel" name="label_24">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>350</y>
+        <x>1010</x>
+        <y>230</y>
         <width>91</width>
         <height>18</height>
        </rect>
@@ -132,8 +132,8 @@
      <widget class="QPushButton" name="pushButton">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>380</y>
+        <x>1010</x>
+        <y>260</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -145,8 +145,8 @@
      <widget class="QPushButton" name="button">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>100</y>
+        <x>730</x>
+        <y>130</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -158,8 +158,8 @@
      <widget class="QPushButton" name="start_button">
       <property name="geometry">
        <rect>
-        <x>980</x>
-        <y>100</y>
+        <x>830</x>
+        <y>130</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -171,8 +171,8 @@
      <widget class="QPushButton" name="pause_button">
       <property name="geometry">
        <rect>
-        <x>1080</x>
-        <y>100</y>
+        <x>930</x>
+        <y>130</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -184,8 +184,8 @@
      <widget class="QPushButton" name="reset_button">
       <property name="geometry">
        <rect>
-        <x>1180</x>
-        <y>100</y>
+        <x>1030</x>
+        <y>130</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -197,8 +197,8 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>1060</x>
-        <y>60</y>
+        <x>910</x>
+        <y>90</y>
         <width>111</width>
         <height>18</height>
        </rect>
@@ -213,7 +213,7 @@
         <x>30</x>
         <y>40</y>
         <width>640</width>
-        <height>480</height>
+        <height>680</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -222,23 +222,12 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QWidget" name="horizontalLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>-20</x>
-         <y>-10</y>
-         <width>1281</width>
-         <height>621</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-      </widget>
      </widget>
      <widget class="QLabel" name="label_26">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>170</y>
+        <x>730</x>
+        <y>200</y>
         <width>111</width>
         <height>18</height>
        </rect>
@@ -250,8 +239,8 @@
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>170</y>
+        <x>870</x>
+        <y>200</y>
         <width>159</width>
         <height>25</height>
        </rect>
@@ -263,8 +252,8 @@
      <widget class="QRadioButton" name="radioButton0">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>200</y>
+        <x>870</x>
+        <y>230</y>
         <width>159</width>
         <height>22</height>
        </rect>
@@ -276,8 +265,8 @@
      <widget class="QRadioButton" name="radioButton1">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>230</y>
+        <x>870</x>
+        <y>260</y>
         <width>159</width>
         <height>22</height>
        </rect>
@@ -289,14 +278,46 @@
      <widget class="QRadioButton" name="radioButton2">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>260</y>
+        <x>870</x>
+        <y>290</y>
         <width>159</width>
         <height>22</height>
        </rect>
       </property>
       <property name="text">
        <string>Camera 2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>370</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Filename (series_sample)</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="fileName">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>390</y>
+        <width>113</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string> </string>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -314,7 +335,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Total data:</string>
+       <string>Delay(ms):</string>
       </property>
      </widget>
      <widget class="QPushButton" name="startSampling">
@@ -339,15 +360,8 @@
         <height>32</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QTextEdit" name="log_display">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>80</y>
-        <width>651</width>
-        <height>451</height>
-       </rect>
+      <property name="text">
+       <string>500</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_33">
@@ -360,7 +374,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Delay(ms):</string>
+       <string>Total data:</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_28">
@@ -398,6 +412,9 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="text">
+       <string>360</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_29">
       <property name="geometry">
@@ -425,43 +442,17 @@
        <string>Refresh</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="saveSensor">
+     <widget class="QTextEdit" name="log_display">
       <property name="geometry">
        <rect>
-        <x>900</x>
-        <y>220</y>
-        <width>88</width>
-        <height>34</height>
+        <x>40</x>
+        <y>70</y>
+        <width>631</width>
+        <height>471</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Save</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="sensorTime">
-      <property name="geometry">
-       <rect>
-        <x>820</x>
-        <y>300</y>
-        <width>51</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>00:00:00</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="sensorTime_2">
-      <property name="geometry">
-       <rect>
-        <x>830</x>
-        <y>270</y>
-        <width>111</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>time</string>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>

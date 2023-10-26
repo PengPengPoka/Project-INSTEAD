@@ -1,6 +1,6 @@
 import sys
 import cv2 as cv
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QTime, QObject,QRunnable
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog, QRadioButton, QFrame
 from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
@@ -8,44 +8,283 @@ import configparser
 from PyQt5 import uic, QtWidgets
 import cv2 as cv
 import sys
+from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
 import datetime
-import csv
+import csv, re
 import serial, threading
+import subprocess
+# import multiprocessingq
+import serial
+import datetime
+import csv
+import multiprocessing
+import serial.tools.list_ports
+import os
+import sys
+import time
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextCursor
+from io import StringIO
+import serial
+import serial.tools.list_ports
+import datetime
+import sys
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QThread, pyqtSignal
+import serial
+import datetime
+import time
+import threading
+import os
+import sys
+import threading
+import serial
+import datetime
+import csv
+import time
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
+from tqdm import tqdm
 
 from Camera import Camera
 
-class DataCollectionThread(threading.Thread):
+sampling_active = False
+
+class DataSamplingThread(threading.Thread):
     def __init__(self, delay, amount):
         super().__init__()
         self.delay = delay
         self.amount = amount
-        self.collect_data = True
-        self.csv_filename = None
 
     def run(self):
-        try:
-            ser = serial.Serial('COM7', baudrate=115200)
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-            self.csv_filename = f"sensor_data_{timestamp}.csv"
+        for i in range(1):
+            print("Searching for COM ports...")
+            ports = list(serial.tools.list_ports.comports())
+            for port in ports:
+                try:
+                    print('Found port ' + port.device, port.serial_number)
+                    ser = serial.Serial(port.device, 115200, timeout=1)
+                    ser.flush()
+                    print('Connect ' + ser.name)
 
-            with open(self.csv_filename, mode='w', newline='') as csv_file:
-                for i in range(int(self.amount)):
-                    if not self.collect_data:
-                        break 
+                    data_to_test = f"{60}#{1}\n"
+                    ser.write(data_to_test.encode())
+                    serial_data_test = ser.readline().decode('ascii')
+                    if serial_data_test == '':
+                        print("Wrong COM port")
+                        raise Exception("Wrong COM port")
+                    split_values_test = serial_data_test.split("#")
+                    int_values_test = [int(value) for value in split_values_test]
+                    if len(int_values_test) < 6:
+                        print("Wrong COM port")
+                        raise Exception("Wrong COM port")
 
-                    serial_data = ser.readline().decode('ascii')
-                    split_values = serial_data.split("#")
-                    int_values = [int(value) for value in split_values]
+                except:
+                    print("error")
+                    ser.close()
+                    continue
+
+                data_to_send = f"{self.delay}#{self.amount}\n"
+                ser.write(data_to_send.encode())
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+                csv_filename = f"sensor_data_{timestamp}_BOHEA_AMPAS_17-{i+1}.csv"
+
+                with open(csv_filename, mode='w', newline='') as csv_file:
                     csv_writer = csv.writer(csv_file)
-                    csv_writer.writerow(int_values)
-        except Exception as e:
-            print(f"Error: {str(e)}")
+                    header = ["Sensor 1", "Sensor 2", "Sensor 3",
+                              "Sensor 4", "Sensor 5", "Sensor 6"]
+                    csv_writer.writerow(header)
+                    
+                    # for j in tqdm(range(self.amount), desc=f'Progress (COM{i+1})', leave=False):
+                    #     serial_data = ser.readline().decode('ascii')
+                    #     split_values = serial_data.split("#")
+                    #     int_values = [int(value) for value in split_values]
+                    #     print(j + 1, int_values)
+                    #     csv_writer.writerow(int_values)
+                    for j in tqdm(range(self.amount), desc=f'Progress (COM{i+1})', leave=False):
+                        serial_data = ser.readline().decode('ascii')
+                        split_values = serial_data.split("#")
+                        if len(split_values) != 6:
+                            print("Received incomplete data:", split_values)
+                            continue
+                        int_values = [int(value) for value in split_values]
+                        print(j + 1, int_values)
+                        csv_writer.writerow(int_values)
+                        # self.progress_signal.emit((j + 1) * 100 // self.amount)
+
+                    ser.close()
+                    break
+
+
+
+class TextStream(StringIO):
+    def __init__(self, text_edit):
+        super().__init__()
+        self.text_edit = text_edit
+
+    def write(self, text):
+        self.text_edit.moveCursor(QTextCursor.End)
+        self.text_edit.insertPlainText(text)
+        self.text_edit.moveCursor(QTextCursor.End)
+
+class DataCollector(QObject):
+    data_collected = pyqtSignal(list)
+
+    def __init__(self, delay, amount):
+        super().__init__()
+        self.delay = delay
+        self.amount = amount
+        self.collect_data = False
+        self.sensor_number = None
+        self.serial_port = None
+
+    def start_collection(self):
+        global sampling_active
+        sampling_active = True
+
+        for sensor_number in range(1, 7):
+            try:
+                print("Searching for COM ports...")
+                ports = list(serial.tools.list_ports.comports())
+                for port in ports:
+                    try:
+                        print('Found port ' + port.device, port.serial_number)
+                        ser = serial.Serial(port.device, 115200, timeout=1)
+                        ser.flush()
+                        print('Connect ' + ser.name)
+
+                        data_to_test = f"{60}#{1}\n"  # data format
+                        ser.write(data_to_test.encode())  # send data to usb
+                        serial_data_test = ser.readline().decode('ascii')
+                        if serial_data_test == '':
+                            print("Wrong COM port")
+                            raise Exception("Wrong COM port")
+                        split_values_test = serial_data_test.split("#")  # split values by #
+                        int_values_test = [int(value) for value in split_values_test]
+                        if len(int_values_test) < 6:
+                            print("Wrong COM port")
+                            raise Exception("Wrong COM port")
+
+                        self.serial_port = ser
+
+                    except Exception as e:
+                        print(f"Error: {str(e)}")
+                        ser.close()
+                        continue
+
+                # for _ in range(self.amount):
+                #     if not self.collect_data:
+                #         break
+                while self.collect_data:
+                    if not sampling_active:
+                        break
+
+                    data_to_send = f"{self.delay}#{self.amount}\n"  # data format
+                    self.serial_port.write(data_to_send.encode())  # send data to USB
+
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+                    csv_filename = f"sensor_data_{timestamp}_BOHEA_AMPAS_6-{self.sensor_number}.csv"
+
+                    with open(csv_filename, mode='w', newline='') as csv_file:
+                        csv_writer = csv.writer(csv_file)
+                        header = ["Sensor 1", "Sensor 2", "Sensor 3",
+                                "Sensor 4", "Sensor 5", "Sensor 6"]
+                        csv_writer.writerow(header)
+
+                        serial_data = self.serial_port.readline().decode('ascii')  # read serial data from USB
+                        while serial_data:
+                            split_values = serial_data.split("#")  # split values by #
+                            int_values = [int(value) for value in split_values]
+                            csv_writer.writerow(int_values)  # append data to csv file
+                            self.data_collected.emit(int_values)  # emit data for UI update
+                            serial_data = self.serial_port.readline().decode('ascii')  # read next serial data
+
+            except Exception as e:
+                print(f"Error: {str(e)}")
+            finally:
+                if self.serial_port:
+                    self.serial_port.close()
+
+        sampling_active = False
+
+    def stop_collection(self):
+        self.collect_data = False
+
+    def is_collecting(self):
+        return self.collect_data
+
+class Signals(QObject):
+    completed = Signal()
+    started = Signal()
+
+class Worker(QRunnable):
+    def __init__(self,n):
+        super().__init__()
+        self.n=n
+        self.signals = Signals()
+
+    @Slot()
+    def run(self):
+        self.signals.started.emit(self.n)
+        for i in range(5):
+            print("Searching for COM ports...")
+            ports = list(serial.tools.list_ports.comports())
+            for port in ports:
+                try:
+                    print('Found port ' + port.device, port.serial_number)
+                    ser = serial.Serial(port.device, 115200, timeout=1)
+                    ser.flush()
+                    print('Connect ' + ser.name)
+
+                    data_to_test = f"{60}#{1}\n"  # data format
+                    ser.write(data_to_test.encode())  # send data to usb
+                    serial_data_test = ser.readline().decode('ascii')
+                    if serial_data_test == '':
+                        print("Wrong COM port")
+                        raise Exception("Wrong COM port")
+                    split_values_test = serial_data_test.split(
+                        "#")   # split values by #
+                    int_values_test = [int(value) for value in split_values_test]
+                    if int_values_test.__len__() < 6:
+                        print("Wrong COM port")
+                        raise Exception("Wrong COM port")
+
+                except:
+                    print("error")
+                    ser.close()
+                    continue
+
+                data_to_send = f"{delay}#{amount}\n"  # data format
+                ser.write(data_to_send.encode())  # send data to usb
+
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+                csv_filename = f"sensor_data_{timestamp}_BOHEA_AMPAS_6-{i+1}.csv"
+
+                with open(csv_filename, mode='w', newline='') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    header = ["Sensor 1", "Sensor 2", "Sensor 3",
+                            "Sensor 4", "Sensor 5", "Sensor 6"]
+                    csv_writer.writerow(header)
+                    for i in range(int(amount)):
+                        serial_data = ser.readline().decode('ascii')    # read serial data from usb
+                        split_values = serial_data.split("#")   # split values by #
+                        int_values = [int(value) for value in split_values]
+                        # for i in range(6):
+                        # int_values[i] = round((int_values[i]*3.3/65536), 3)
+                        print(i+1, int_values)  # Output: [123, 456, 789]
+                        csv_writer = csv.writer(csv_file)
+                        csv_writer.writerow(int_values)  # append data to csv file
+                    ser.close()
+                    break
+
+        pass
+        self.signals.completed.emit(self.n)
+
 
 class SecondWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/media/Backup/Teh/fix banget/config.ui', self)
+        uic.loadUi("C:\\Users\\Ahza\\Repositories baru\\Project-INSTEAD\\gui\\config.ui", self)
         self.initUI()
         self.cam_setting = {}
         
@@ -269,26 +508,6 @@ class SecondWindow(QtWidgets.QDialog):
             print("No capture device")
 
     def applyConfig(self):
-        # self.setCameraProperties()
-        # self.cam.AutoOff(device)
-        # self.cam.getSettings()
-        # self.cam.setSettings(device)
-        
-        # device.set(cv.CAP_PROP_BRIGHTNESS, self.cam_setting['brightness'])
-        # device.set(cv.CAP_PROP_CONTRAST, self.cam_setting['contrast'])
-        # device.set(cv.CAP_PROP_SATURATION, self.cam_setting['saturation'])
-        # device.set(cv.CAP_PROP_SHARPNESS, self.cam_setting['sharpness'])
-        # device.set(cv.CAP_PROP_WB_TEMPERATURE, self.cam_setting['white_balance'])
-        # device.set(cv.CAP_PROP_GAIN, self.cam_setting['gain'])
-        # device.set(cv.CAP_PROP_ZOOM, self.cam_setting['zoom'])
-        # device.set(cv.CAP_PROP_FOCUS, self.cam_setting['focus'])
-        # device.set(cv.CAP_PROP_EXPOSURE, self.cam_setting['exposure'])
-        # device.set(cv.CAP_PROP_PAN, self.cam_setting['pan'])
-        # device.set(cv.CAP_PROP_TILT, self.cam_setting['tilt'])
-
-        # self.cam.setSettings(self.slider_values)  
-        # self.cam.setSettings(device)
-
         # Ensure the camera is opened and a valid device is available
         if self.main.video_capture.isOpened():
             # Call the applyConfig method with the current slider values
@@ -312,13 +531,31 @@ class SecondWindow(QtWidgets.QDialog):
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
+
         super().__init__()
-        uic.loadUi('/media/Backup/Teh/fix banget/vision.ui', self)
+        uic.loadUi("C:\\Users\\Ahza\\Repositories baru\\Project-INSTEAD\\gui\\vision.ui", self)
         self.initUI()
         self.cam_setting = {}
         self.collect_data = True #data collectin control flag
+        self.timer_sensor = True
+        self.p1 = None
+        global global_self
+        global_self = self
+        self.serial_port = None
+        self.found_port = False
+        # self.find_port()
+        self.data_collection_thread = None
+        self.sample_name = ""
+        self.last_name=""
+        self.shot_count = 1
+
+        # self.data_collection_thread = None
+        self.threadpool = QThreadPool()
+        
+        pass
 
     def initUI(self):
+        self.data_collector = None
         self.cam = Camera()
         self.central_widget = QTabWidget()
         self.layout = QVBoxLayout(self.frame)
@@ -329,16 +566,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.camera_layout = QVBoxLayout(self.camera_frame)
         self.layout.addWidget(self.camera_frame)
         
-        # self.radioButton0 = QRadioButton('Camera 0')
-        # self.radioButton1 = QRadioButton('Camera 1')
-        # self.radioButton2 = QRadioButton('Camera 2')
-
-        # self.camera_layout.addWidget(self.radioButton0)
-        # self.camera_layout.addWidget(self.radioButton1)
-        # self.camera_layout.addWidget(self.radioButton2)
-
         self.startButton.clicked.connect(self.togglePlayback)
-        self.snapButton.clicked.connect(self.takeScreenshot)
+        # self.snapButton.clicked.connect(self.takeScreenshot)
+        self.snapButton.clicked.connect(self.save_filename)
+
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateFrame)
@@ -351,26 +582,37 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pause_button.clicked.connect(self.pause_action)
         self.reset_button.clicked.connect(self.reset_action)
         self.camConfig.clicked.connect(self.config_action)
-        self.startSampling.clicked.connect(self.start_collection)
+        # self.startSampling.clicked.connect(self.start_collection)
+        self.startSampling.clicked.connect(self.start_sampling)
+        self.startSampling.clicked.connect(self.start_timer)
+        # self.startSampling.clicked.connect(self.find_port)
+        # self.startSampling.clicked.connect(self.startMulti)
         self.stopSampling.clicked.connect(self.stop_collection)
         self.refreshScreen.clicked.connect(self.clearSerial)
+        # self.refreshScreen2.clicked.connect(self.clearSerial)
         self.saveSensor.clicked.connect(self.save_collection)
         self.clearCropped.clicked.connect(self.clearCrop)
 
-
-
         self.log_display.setReadOnly(True)
+        sys.stdout = TextStream(self.log_display)
+
+        
+        # self.log_display_2.setReadOnly(True)
+        # sys.stdout = TextStream(self.log_display_2)
 
         self.timer2 = QTimer(self)
         self.timer2.timeout.connect(self.showTime)
         self.timer2.start(100)
 
+        self.timer3 = QTimer(self)
+        self.time3=QTime(0,0)
+
         # Define your other widgets and actions here
 
-        self.path = '/media/Backup/Teh/teststack/default_param.txt'
+        self.path = "C:\\Users\\Ahza\\Repositories baru\\Project-INSTEAD\\gui\\default_param.txt"
         self.cam.OpenSettings(self.path)
 
-        self.video_capture = cv.VideoCapture(0, cv.CAP_ANY)
+        self.video_capture = cv.VideoCapture(0, cv.CAP_DSHOW)
         # self.setCameraProperties(device)
 
         if not self.video_capture.isOpened():
@@ -380,55 +622,35 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.cam.setSettings(self.video_capture)
 
         self.preferred_extension = ""
-
-        # self.radioButton0 = QRadioButton("Camera 0")
-        # self.radioButton1 = QRadioButton("Camera 1")
-        # self.radioButton2 = QRadioButton("Camera 2")
-
-        # self.radioFile0 = QRadioButton("PNG")
-        # self.radioFile1 = QRadioButton("JPG")
-        # self.radioFile2 = QRadioButton("All Files") 
-
         # Add a file_layout here
         self.file_frame = QFrame()
         self.file_layout = QVBoxLayout(self.file_frame)
         self.layout.addWidget(self.file_frame)
-
-        # self.file_layout.addWidget(self.radioFile0)
-        # self.file_layout.addWidget(self.radioFile1)
-        # self.file_layout.addWidget(self.radioFile2)
 
         # Connect radio button signals
         self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
         self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
 
-        # self.radioFile0.clicked.connect(lambda: self.setPreferredExtension("png"))
-        # self.radioFile1.clicked.connect(lambda: self.setPreferredExtension("jpg"))
-        # self.radioFile2.clicked.connect(lambda: self.setPreferredExtension(""))
-
-        # self.screenshot_label = QLabel(self.tab_5)
         
+        # self.find_port()
 
-    # def setCameraProperties(self,device):
-    # Ensure the camera is opened and a valid device is available
-        # if self.video_capture.isOpened():
-            # self.video_capture.set(cv.CAP_PROP_AUTO_EXPOSURE, 0)  # Turn off auto exposure
-            # # self.video_capture.set(cv.CAP_PROP_AUTO_GAIN, 0)  # Turn off auto gain
-            # self.video_capture.set(cv.CAP_PROP_AUTO_WHITE_BALANCE, 0)  # Turn off auto white balance
+    def start_sampling(self):
+            delay = 60
+            amount = 150
 
-            # # Set your desired properties here, e.g., exposure, gain, white balance, etc.
-            # self.video_capture.set(cv.CAP_PROP_EXPOSURE, self.slider_values['exposure'])
-            # # self.video_capture.set(cv.CAP_PROP_GAIN, self.slider_values['gain'])
-            # self.video_capture.set(cv.CAP_PROP_WHITE_BALANCE_BLUE_U, self.slider_values['white_balance'])
+            data_thread = DataSamplingThread(delay, amount)
+            data_thread.start() 
 
-        #     device.set(cv.CAP_PROP_AUTOFOCUS,0)
-        #     device.set(cv.CAP_PROP_AUTO_WB,0)
-        #     device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)            
+    def start(self):
+        pool = QThreadPool.globalInstance()
+        for _ in range(1,100):
+            worker=Worker()
+            worker.signals.completed.connect(self.update)
+            pool.start(Worker())
 
-        #     self.show_notification_dialog('Camera properties applied!')
-        # else:
-        #     print("No capture device")
+    def update():
+        pass
 
     def clearSerial(self):
         self.log_display.clear()
@@ -436,106 +658,112 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def clearCrop(self):
         self.cropShow.clear()
 
+    # def startMulti(self, delay, amount):
+    #     self.p1 = multiprocessing.Process(target=self.start_collection, args=(amount,delay))
+    #     self.p1.start()
+
+    # def find_port(self):
+    #     if self.found_port:
+    #         return  # Port already found and initialized
+
+    #     print("Searching for COM ports...")
+    #     ports = list(serial.tools.list_ports.comports())
+    #     for port in ports:
+    #         try:
+    #             print('Found port ' + port.device, port.serial_number)
+    #             ser = serial.Serial(port.device, 115200, timeout=1)
+    #             ser.flush()
+    #             print('Connect ' + ser.name)
+
+    #             data_to_test = f"{60}#{1}\n"  # data format
+    #             ser.write(data_to_test.encode())  # send data to USB
+    #             serial_data_test = ser.readline().decode('ascii')
+    #             if serial_data_test == '':
+    #                 print("Wrong COM port")
+    #                 raise Exception("Wrong COM port")
+    #             split_values_test = serial_data_test.split(
+    #                 "#")   # split values by #
+    #             int_values_test = [int(value) for value in split_values_test]
+    #             if len(int_values_test) < 6:
+    #                 print("Wrong COM port")
+    #                 raise Exception("Wrong COM port")
+
+    #             # If we reached this point, we found the correct port
+    #             self.serial_port = ser
+    #             self.found_port = True
+    #             return
+
+    #         except Exception as e:
+    #             print(f"Error: {str(e)}")
+    #             ser.close()
+    #             continue
+
     def start_collection(self):
-        # delay = self.delay_input.text()
-        # amount = self.amount_input.text()
-        # self.log_display.clear()
+        global sampling_active
 
-        # try:
-        #     ser = serial.Serial('COM7', baudrate=115200)
-        #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-        #     csv_filename = f"sensor_data_{timestamp}.csv"
+        if not sampling_active:
+            delay_text = self.delay_input.text()
+            amount_text = self.amount_input.text()
 
-        #     with open(csv_filename, mode='w', newline='') as csv_file:
-        #         for i in range(int(amount)):
-        #             if not self.collect_data:  # cek tadi tombol stopnya kepencet ga
-        #                 self.log_display.append("Data collection stopped.")
-        #                 break  # Exit  loop
+            if not delay_text or not amount_text:
+                QMessageBox.warning(self, 'Warning', 'Please enter delay and amount values.')
+                return
 
-        #             serial_data = ser.readline().decode('ascii')
-        #             split_values = serial_data.split("#")
-        #             int_values = [int(value) for value in split_values]
-        #             csv_writer = csv.writer(csv_file)
-        #             csv_writer.writerow(int_values)
-        #             self.log_display.append(f"Collected data: {int_values}")
-        # except Exception as e:
-        #     self.log_display.append(f"Error: {str(e)}")
+            delay = int(delay_text)
+            amount = int(amount_text)
 
-        # delay = self.delay_input.text()
-        # amount = self.amount_input.text()
-        # self.log_display.clear()
+            self.data_collection_thread = DataCollector(delay, amount)
+            self.data_collection_thread.data_collected.connect(self.handle_data_collected)
 
-        # try:
-        #     ser = serial.Serial('COM7', baudrate=115200)
-        #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-        #     csv_filename = f"sensor_data_{timestamp}.csv"
+            runnable = DataCollectionRunnable(self.data_collection_thread)
+            self.threadpool.start(runnable)
+        else:
+            QMessageBox.warning(self, 'Warning', 'Sampling process is already active.')
 
-        #     with open(csv_filename, mode='w', newline='') as csv_file:
-        #         for i in range(int(amount)):
-        #             if not self.collect_data:  
-        #                 self.log_display.append("Data collection stopped.")
-        #                 break 
 
-        #             serial_data = ser.readline().decode('ascii')
-        #             split_values = serial_data.split("#")
-        #             int_values = [int(value) for value in split_values]
-        #             csv_writer = csv.writer(csv_file)
-        #             csv_writer.writerow(int_values)
-        #             self.log_display.append(f"Collected data: {int_values}")
-        # except Exception as e:
-        #     self.log_display.append(f"Error: {str(e)}")
+        # if self.data_collector and self.data_collector.is_collecting():
+        #     print("Data collection is already running.")
+        # else:
+        #     delay_text = self.delay_input.text()
+        #     amount_text = self.amount_input.text()
 
-        # delay = self.delay_input.text()
-        # amount = self.amount_input.text()
-        # self.log_display.clear()
+        #     if not delay_text:
+        #         delay_text = "16"  # Default 500 ms
 
-        # self.data_collection_thread = DataCollectionThread(delay, amount)
-        # self.data_collection_thread.start()
+        #     if not amount_text:
+        #         amount_text = "3000"  # Default 360
 
-        #----
-        delay_text = self.delay_input.text()
-        amount_text = self.amount_input.text()
+        #     global amount
+        #     global delay
+        #     amount = int(amount_text)
+        #     delay = int(delay_text)
 
-        if not delay_text:
-            delay_text = "500"  # Default delay of 500 milliseconds
+        #     self.data_collector = DataCollector(delay, amount)
+        #     self.data_collector.data_collected.connect(self.handle_data_collected)
+        #     self.data_collector.collect_data = True
+        #     collector_thread = threading.Thread(target=self.data_collector.start_collection)
+        #     collector_thread.start()
 
-        if not amount_text:
-            amount_text = "360"  # Default amount of 360 data points
-
-        delay = int(delay_text)
-        amount = int(amount_text)
-        # delay = self.delay_input.text()
-        # amount = self.amount_input.text()
-        self.log_display.clear()
-
-        try:
-            ser = serial.Serial('COM7', baudrate=115200)
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-            csv_filename = f"sensor_data_{timestamp}.csv"
-
-            with open(csv_filename, mode='w', newline='') as csv_file:
-                csv_writer = csv.writer(csv_file)
-                
-                titles = ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5', 'Sensor 6']
-                csv_writer.writerow(titles)
-                
-                for i in range(int(amount)):
-                    if not self.collect_data:
-                        self.log_display.append("Data collection stopped.")
-                        break
-                    
-                    serial_data = ser.readline().decode('ascii')
-                    split_values = serial_data.split("#")
-                    int_values = [int(value) for value in split_values]
-                    
-                    csv_writer.writerow(int_values)
-                    self.log_display.append(f"Collected data: {int_values}")
-        except Exception as e:
-            self.log_display.append(f"Error: {str(e)}")
+    
 
 
     def stop_collection(self):
-        self.collect_data = False  
+        # self.collect_data = False  
+        global sampling_active
+
+        if self.data_collection_thread:
+            self.data_collection_thread.stop_collection()
+            self.data_collection_thread = None
+            sampling_active = False
+            self.log_display.append("Data collection stopped.")
+        # if self.data_collector:
+        #     self.data_collector.stop_collection()
+        #     self.data_collector = None
+        #     print("Data collection stopped.")
+            # self.log_display.append("stopping data collection")
+
+    def handle_data_collected(self):
+        # self.log_display.append(f"Collected data: {int_values}")
         self.log_display.append("stopping data collection")
     
     def save_collection(self):
@@ -571,6 +799,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         #         shutil.move(self.data_collection_thread.csv_filename, csv_filename)
         #         self.log_display.append(f"Data saved as {csv_filename}")
 
+
     def showNotDetectedDialog(self):
         warning_box = QMessageBox()
         warning_box.setIcon(QMessageBox.Warning)
@@ -587,6 +816,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         warning_box.setStandardButtons(QMessageBox.Ok)
 
         warning_box.exec_()
+
+    def start_timer(self):
+        self.timer3.timeout.connect(self.update_timer)
+        self.timer3.start(1000)
+
+    def stop_timer(self):
+        self.timer3.stop()
+
+    def reset_timer(self):
+        self.timer3.stop()
+        self.time3 = QTime(0, 0)
+        # self.sensorTime.setText(self.time3.toString("mm:ss"))
+
+    def update_timer(self):
+        self.time3 = self.time3.addSecs(1)
+        # self.sensorTime.setText(self.time3.toString("mm:ss"))
 
     def showTime(self):
         if self.start:
@@ -638,38 +883,142 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.timer.start(30)
         self.playback = not self.playback
 
-    def takeScreenshot(self):
-        # options = QFileDialog.Options()
-        # options |= QFileDialog.DontUseNativeDialog
-        # # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", f"{self.preferred_extension.upper()} Files (*.{self.preferred_extension});;All Files (*)", options=options)
-        # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "JPEG Files (*.jpg);;All Files (*)", options=options)
+    def save_filename(self):
+        # self.sample_name = self.fileName.text()
+        self.sample_name = self.clean_filename(self.fileName.text())
+        if not self.sample_name:
+            return  
 
-        # cv.imwrite(file_name, image)
-        # #filename, array
-
-        # if file_name:
-        #     print(f"Image saved as {file_name}")
+        if self.sample_name != self.last_name:
+            self.last_name = self.sample_name
+            self.shot_count = 1
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "JPEG Files (*.jpg);;All Files (*)", options=options)
-        extention = ".jpg"
+
+        suggested_file_name = self.get_suggested_file_name()
+
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", suggested_file_name, "JPEG Files (*.jpg);;All Files (*)", options=options)
 
         if file_name:
-            ret, frame = self.video_capture.read()
-            if ret:
-                cv.imwrite((file_name+extention), frame)
-            print(f"Image saved as {file_name}")
-             
-            screenshot_pixmap = QPixmap(file_name + extention)
+            self.update_shot_count(file_name)
+            self.save_image(file_name)
+        
+    def clean_filename(self, name):
+        name = re.sub(r'[\\/:"*?<>|]', '_', name)
+        # name = re.sub(r'\s+','_',name)
+        name = re.sub(r'\s+',' ',name)
+        return name[:100]  
+
+
+    def update_shot_count(self, file_name):
+        directory, file = os.path.split(file_name)
+
+        base_name, ext = os.path.splitext(file)
+
+        if base_name.startswith(self.sample_name):
+            parts = base_name.split("_")
+            if len(parts) == 2:
+                self.shot_count = int(parts[1]) + 1
+        else:
+            self.shot_count = 1
+
+    def get_suggested_file_name(self):
+        test_shot = f"{self.shot_count}"
+        base_name = f"{self.sample_name}"
+        # while os.path.exists(f"{base_name}.jpg"):
+        #     self.shot_count += 1
+        #     base_name = f"{self.sample_name}_{self.shot_count}"
+        # return f"{base_name}.jpg"
+
+        existing_files = [file for file in os.listdir() if re.match(rf"{base_name}_(\d+)\.jpg", file)]
+        existing_numbers = [int(re.search(rf"{base_name}_(\d+)\.jpg", file).group(1)) for file in existing_files if re.search(rf"{base_name}_(\d+)\.jpg", file)]
+
+        # print(f"Suggested base_name: {base_name}")
+        # print(f"Existing files: {existing_files}")
+        # print(f"Existing numbers: {existing_numbers}")
+        # print(f"shot {test_shot}")
+
+        # while self.shot_count in existing_numbers:
+        #     self.shot_count += 1
+
+        if self.shot_count > 0 :
+            if existing_numbers:
+                self.shot_count=max(existing_numbers)+1
+
+        return f"{base_name}_{self.shot_count}.jpg"
+
+    def save_image(self, file_name):
+        ret, frame = self.video_capture.read()
+        if ret:
+            extension = ".jpg"
+            file_name_with_extension = f"{file_name}{extension}"
+            cv.imwrite(file_name_with_extension, frame)
+
+            print(f"Image saved as {file_name_with_extension}")
+          
+            screenshot_pixmap = QPixmap(file_name_with_extension)
             self.cropShow.setPixmap(screenshot_pixmap)
 
-        # screenshot_pixmap = QPixmap(file_name + extension)
-        # screenshot_label.setPixmap(screenshot_pixmap)
+        message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
+        QMessageBox.information(self, "File Saved", message)
 
-        # # Show the second frame
-        # second_frame.show()
+    def takeScreenshot(self):
+        self.sample_name = self.fileName.text()
+        if not self.sample_name:
+            return  
+
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", f"{self.sample_name}_{self.shot_count}.jpg", "JPEG Files (*.jpg);;All Files (*)", options=options)
+
+        if file_name:
+            directory, file = os.path.split(file_name)
+
+            base_name, ext = os.path.splitext(file)
+
+            if base_name.startswith(self.sample_name):
+                parts = base_name.split("_")
+                if len(parts) == 2:
+                    self.shot_count = int(parts[1]) + 1
+
+            self.shot_count += 1
+
+            ret, frame = self.video_capture.read()
+            if ret:
+                extension = ".jpg"
+                file_name_with_extension = f"{file_name}{extension}"
+                cv.imwrite(file_name_with_extension, frame)
+
+                print(f"Image saved as {file_name_with_extension}")
+              
+                screenshot_pixmap = QPixmap(file_name_with_extension)
+                self.cropShow.setPixmap(screenshot_pixmap)
+
+            message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
+            QMessageBox.information(self, "File Saved", message)
+
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        # self.sample_name = self.fileName.text()
+
+        # # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "JPEG Files (*.jpg);;All Files (*)", options=options)
+        # file_name, _ = QFileDialog.getSaveFileName(self, "Save Image",  , "JPEG Files (*.jpg);;All Files (*)", options=options)
+        # extention = ".jpg"
+
+        # if file_name:
+        #     ret, frame = self.video_capture.read()
+        #     if ret:
+        #         cv.imwrite((file_name+extention), frame)
+        #     print(f"Image saved as {file_name}")
+              
+        #     screenshot_pixmap = QPixmap(file_name + extention)
+        #     self.cropShow.setPixmap(screenshot_pixmap)
+
+        # self.shot_count += 1
+        # message = f"Saved as {file_name}\nDirectory: {os.getcwd()}"
+        # QMessageBox.information(self, "File Saved", message)
         
+
     def changeCameraIndex(self, index):
         self.video_capture.release()
         self.video_capture = cv.VideoCapture(index)
@@ -681,8 +1030,31 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sub_window = SecondWindow()
         sub_window.exec_()
 
+class DataCollectionRunnable(QRunnable):
+    def __init__(self, data_collector):
+        super().__init__()
+        self.data_collector = data_collector
+
+    def run(self):
+        self.data_collector.start_collection()
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    # multi_process = Ui_MainWindow()
     window = Ui_MainWindow()
     window.show()
+
+    # window.find_port()
+    # p1 = multiprocessing.Process(target=window.start_collection)
+    # p1.start()
+    
+    # thread_pool = QThreadPool()
+    # thread_pool.setMaxThreadCount(4)  # Set the number of threads as needed
+
+    # for n in range(4):  # Adjust this range as needed
+    #     worker = Worker(n)
+    #     worker.signals.completed.connect(window.update)  # Connect the signal to update function
+    #     thread_pool.start(worker)  # Start the worker in the thread pool
+
+    
     sys.exit(app.exec_())
