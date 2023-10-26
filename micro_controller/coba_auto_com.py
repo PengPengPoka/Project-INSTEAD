@@ -13,7 +13,7 @@ ser = serial.Serial(port.device)
 if ser.isOpen():
     ser.close()
 
-ser = serial.Serial(port.device, 115200)
+ser = serial.Serial(port.device, 115200, timeout=1)
 ser.flushInput()
 ser.flushOutput()
 ser.flush()
@@ -21,9 +21,12 @@ print('Connect ' + ser.name)
 delay = 60
 amount = 30
 data_to_send = f"{delay}#{amount}\n"  # data format
+print(data_to_send.encode())
 ser.write(data_to_send.encode())  # send data to usb
+# ser.write(b"60#15\n")  # send data to usb
 for i in range(amount):
     serial_data = ser.readline().decode('ascii')    # read serial data from usb
     split_values = serial_data.split("#")   # split values by #
     int_values = [int(value) for value in split_values]
     print(int_values)  # Output: [123, 456, 789]
+    # print(serial_data)
