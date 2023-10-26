@@ -41,7 +41,7 @@ def request_data(delay, amount):
             ser.write(data_to_send.encode())  # send data to usb+
 
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-            csv_filename = f"sensor_data_{timestamp}_BOP_AMPAS_6-{i+1}.csv"
+            csv_filename = f"sensor_data_{timestamp}_BOP_AMPAS_2-{i+1}.csv"
 
             with open(csv_filename, mode='w', newline='') as csv_file:
                 csv_writer = csv.writer(csv_file)
