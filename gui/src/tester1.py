@@ -64,8 +64,6 @@ class DataSamplingThread(QtCore.QThread):
 
 
     def run(self):
-        # default_folder = '"C:\\Users\\Lyskq\\Documents\\"'
-        # default_folder = '"C:\\Users\\Users\\Documents\\"'
         default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
         for i in range(self.repetition):
             self.update_signal.emit("Searching for COM ports...")
@@ -137,7 +135,9 @@ class TextStream(StringIO):
 class SecondWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi("C:\\Users\\Lyskq\\Downloads\\gui\\config.ui", self)
+        x = os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\") 
+        uic.loadUi(x, self)
+
         self.initUI()
         self.cam_setting = {}
         
@@ -379,7 +379,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
 
         super().__init__()
-        uic.loadUi("C:\\Users\\Lyskq\\Downloads\\gui\\vision.ui", self)
+        vision =os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\vision.ui")
+        # uic.loadUi("C:\\Users\\Lyskq\\Downloads\\gui\\vision.ui", self)
+        uic.loadUi(vision, self)
         self.initUI()
         self.cam_setting = {}
         self.collect_data = True #data collectin control flag
@@ -435,7 +437,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.startSampling.clicked.connect(self.start_timer)
         # self.startSampling.clicked.connect(self.find_port)
         # self.startSampling.clicked.connect(self.startMulti)
-        self.stopSampling.clicked.connect(self.stop_collection)
+        # self.stopSampling.clicked.connect(self.stop_collection)
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
         # self.refreshScreen2.clicked.connect(self.clearSerial)
@@ -458,7 +460,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # Define your other widgets and actions here
 
-        self.path = "C:\\Users\\Lyskq\\Downloads\\gui\\default_param.txt"
+        # self.path = "C:\\Users\\Lyskq\\Downloads\\gui\\default_param.txt"
+        self.path = os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\default_param.txt") 
         self.cam.OpenSettings(self.path)
 
         self.video_capture = cv.VideoCapture(0, cv.CAP_DSHOW)
@@ -535,8 +538,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.log_display.append("Data collection completed.")
 
     def openFolder(self):
-        # default_folder = '"C:\\Users\\Lyskq\\Documents\\"'
-        # default_folder = '"C:\\Users\\Users\\Documents\\"'
         default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
 
         if os.path.exists(default_folder):
@@ -582,15 +583,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox.warning(self, 'Warning', 'Sampling process is already active.')
 
-    def stop_collection(self):
-        # self.collect_data = False  
-        global sampling_active
+    # def stop_collection(self):
+    #     # self.collect_data = False  
+    #     global sampling_active
 
-        if self.data_collection_thread:
-            self.data_collection_thread.stop_collection()
-            self.data_collection_thread = None
-            sampling_active = False
-            self.log_display.append("Data collection stopped.")
+    #     if self.data_collection_thread:
+    #         self.data_collection_thread.stop_collection()
+    #         self.data_collection_thread = None
+    #         sampling_active = False
+    #         self.log_display.append("Data collection stopped.")
 
     def handle_data_collected(self):
         # self.log_display.append(f"Collected data: {int_values}")
