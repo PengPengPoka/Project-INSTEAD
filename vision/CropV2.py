@@ -9,12 +9,16 @@ def on_trackbar():
     pass
 
 def getHist(image):
+    non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
+
     color = ['b','g','r']
     for channel, col in enumerate(color):
-        histogram = cv.calcHist([image], [channel], mask=None, histSize=[256], ranges=[0,256])
+        histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0,256])
         plt.plot(histogram, color=col)
         plt.xlim(0,256)
 
+    plt.xlabel("RGB values")
+    plt.ylabel("Pixel Frequency")
     plt.title("RGB values")
     plt.show()
 
@@ -44,19 +48,21 @@ def crop_mouse(event, x, y, img):
 
 def main():
     home = os.path.expanduser("~")
-    img_path = home + "\\OneDrive\\Pictures\\INSTEAD Teh\\DUST_2-1.jpg"
+    img_path = home + "\\Repositories 2\\Project-INSTEAD\\Data_4-10-2023[5]\\Warna_Rasa\\FI_1-10.jpg"
     img = cv.imread(img_path)
 
     height = img.shape[0]
     width = img.shape[1]
     channel = img.shape[2]
 
-    cv.namedWindow("crop events")
-
     cv.namedWindow("crop trackbar")
     cv.createTrackbar("x space", "crop trackbar", 0, width-1, on_trackbar)
     cv.createTrackbar("y space", "crop trackbar", 0, height-1, on_trackbar)
     cv.createTrackbar("radius", "crop trackbar", 0, 450, on_trackbar)
+
+    cv.setTrackbarPos("x space", "crop trackbar", 329)
+    cv.setTrackbarPos("y space", "crop trackbar", 240)
+    cv.setTrackbarPos("radius", "crop trackbar", 150)
     
     while True:
         x = cv.getTrackbarPos("x space", "crop trackbar")
