@@ -14,16 +14,12 @@ import datetime
 import csv, re
 import serial, threading
 import subprocess
-# import multiprocessingq
 import serial
 import datetime
 import csv
-import multiprocessing
 import serial.tools.list_ports
 import os
 import sys
-import time
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from io import StringIO
 import serial
@@ -46,10 +42,69 @@ import time
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
 from tqdm import tqdm
 from PyQt5 import QtCore,QtWidgets
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from matplotlib import pyplot as plt
+import numpy as np
+
 
 from Camera import Camera
 
 sampling_active = False
+
+def crop_trackbar(height, width, px, py, radius, src):
+    canvas = np.zeros((height, width, 3), dtype=np.uint8)
+    img = src.copy()
+
+    cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
+
+    cropped = cv.bitwise_and(img, canvas, mask=None)
+    return cropped
+
+class ImageProcessor(QThread):
+    image_processed = pyqtSignal(QImage)
+
+    def __init__(self, img_path, parent=None):
+        super(ImageProcessor, self).__init__(parent)
+        self.ui = Ui_MainWindow()
+        # self.img_path = img_path
+        self.img_path = None
+        self.file_name = None
+    
+    def set_image_path(self, img_path):
+        self.img_path = img_path
+
+
+    @Slot(str)
+    def receive_file_name(self, file_name):
+        self.file_name = file_name
+        self.set_image_path(file_name)  # Set the image path when file_name is received
+
+    def run(self):
+        if self.img_path is not None:
+
+            img = cv.imread(self.img_path)
+            height, width, _ = img.shape
+
+            while True:
+                x = cv.getTrackbarPos("x space", "crop trackbar")
+                y = cv.getTrackbarPos("y space", "crop trackbar")
+                radius = cv.getTrackbarPos("radius", "crop trackbar")
+
+                img_copy = img.copy()
+                cv.circle(img_copy, (x, y), radius, [0, 0, 255], 2)
+
+                crop_img = crop_trackbar(height, width, x, y, radius, img)
+
+                # Convert the processed image to a QImage for display
+                img_rgb = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
+                h, w, ch = img_rgb.shape
+                bytes_per_line = ch * w
+                q_image = QImage(img_rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+
+                self.image_processed.emit(q_image)
+
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -135,7 +190,7 @@ class TextStream(StringIO):
 class SecondWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        x = os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\") 
+        x = os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\config.ui") 
         uic.loadUi(x, self)
 
         self.initUI()
@@ -344,9 +399,9 @@ class SecondWindow(QtWidgets.QDialog):
 
     # Ensure the camera is opened and a valid device is available
         if self.video_capture.isOpened():
-            device.set(cv.CAP_PROP_AUTOFOCUS,0)
-            device.set(cv.CAP_PROP_AUTO_WB,0)
-            device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
+            # device.set(cv.CAP_PROP_AUTOFOCUS,0)
+            # device.set(cv.CAP_PROP_AUTO_WB,0)
+            # device.set(cv.CAP_PROP_AUTO_EXPOSURE,0)
             self.show_notification_dialog('Camera properties applied!')
         else:
             print("No capture device")
@@ -375,6 +430,8 @@ class SecondWindow(QtWidgets.QDialog):
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     update_lcd_signal = pyqtSignal(int)
+    file_name_signal = pyqtSignal(str)
+    file_name = ""
 
     def __init__(self):
 
@@ -391,18 +448,26 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         global_self = self
         self.serial_port = None
         self.found_port = False
-        # self.find_port()
         self.data_collection_thread = None
         self.sample_name = ""
         self.last_name=""
+        self.file_name = ""
+
         self.shot_count = 1
 
         # self.data_collection_thread = None
         self.threadpool = QThreadPool()
         self.update_lcd_signal.connect(self.update_repetition_lcd)
-
         
+        # self.ui.file_name_signal.connect(self.run)  
+        # crop_path = os.path.dirname(self.file_name)
+        # crop_path = os.path.dirname(Ui_MainWindow.file_name)
+        # crop_path = os.path.dirname(self.file_name)
+
         pass
+
+    # message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
+
 
     def initUI(self):
         self.data_collector = None
@@ -417,7 +482,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.camera_frame)
         
         self.startButton.clicked.connect(self.togglePlayback)
-        # self.snapButton.clicked.connect(self.takeScreenshot)
         self.snapButton.clicked.connect(self.save_filename)
 
 
@@ -427,10 +491,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         self.count = 0
         self.start = False
-        self.button.clicked.connect(self.get_seconds)
-        self.start_button.clicked.connect(self.start_action)
-        self.pause_button.clicked.connect(self.pause_action)
-        self.reset_button.clicked.connect(self.reset_action)
+        # self.button.clicked.connect(self.get_seconds)
+        # self.start_button.clicked.connect(self.start_action)
+        # self.pause_button.clicked.connect(self.pause_action)
+        # self.reset_button.clicked.connect(self.reset_action)
         self.camConfig.clicked.connect(self.config_action)
         # self.startSampling.clicked.connect(self.start_collection)
         self.startSampling.clicked.connect(self.start_sampling)
@@ -487,6 +551,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         # self.find_port()
 
+    def update_image(self, image):
+        pixmap = QPixmap.fromImage(image)
+        self.crop_image.setPixmap(pixmap)
+        # self.cropShow.setPixmap(QPixmap.fromImage(q_image))
+
 
     def update_gui(self,data):
         self.text_edit.append(data)
@@ -514,11 +583,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             if not csv_name:
                 return
 
-            # self.thread = DataSamplingThread(delay, amount,repetition,csv_name)
-            # self.data_collection_thread.repetition_signal.connect(self.update_repetition_lcd)
-            # self.thread.update_signal.connect(self.update_text_edit)
-            # self.thread.finished.connect(self.thread_finished)
-            # self.thread.start()
 
             self.thread = DataSamplingThread(delay, amount,repetition,csv_name)
             self.thread.repetition_signal.connect(self.update_repetition_lcd)
@@ -545,13 +609,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox(self, "Folder not found", "the folder doesn't exit, check again")
 
-    def start(self):
-        pool = QThreadPool.globalInstance()
-        for _ in range(1,100):
-            worker=Worker()
-            worker.signals.completed.connect(self.update)
-            pool.start(Worker())
-
     def update():
         pass
 
@@ -560,38 +617,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def clearCrop(self):
         self.cropShow.clear()
-
-    def start_collection(self):
-        global sampling_active
-
-        if not sampling_active:
-            delay_text = self.delay_input.text()
-            amount_text = self.amount_input.text()
-
-            if not delay_text    or not amount_text:
-                QMessageBox.warning(self, 'Warning', 'Please enter delay and amount values.')
-                return
-
-            delay = int(delay_text)
-            amount = int(amount_text)
-
-            self.data_collection_thread = DataCollector(delay, amount)
-            self.data_collection_thread.data_collected.connect(self.handle_data_collected)
-
-            runnable = DataCollectionRunnable(self.data_collection_thread)
-            self.threadpool.start(runnable)
-        else:
-            QMessageBox.warning(self, 'Warning', 'Sampling process is already active.')
-
-    # def stop_collection(self):
-    #     # self.collect_data = False  
-    #     global sampling_active
-
-    #     if self.data_collection_thread:
-    #         self.data_collection_thread.stop_collection()
-    #         self.data_collection_thread = None
-    #         sampling_active = False
-    #         self.log_display.append("Data collection stopped.")
 
     def handle_data_collected(self):
         # self.log_display.append(f"Collected data: {int_values}")
@@ -700,6 +725,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         if file_name:
             self.update_shot_count(file_name)
             self.save_image(file_name)
+
+            # Ui_MainWindow.file_name = file_name
+            self.file_name=file_name
+            self.file_name_signal.emit(file_name)
+
+            self.image_processor = ImageProcessor(file_name)
+            self.image_processor.image_processed.connect(self.update_image)
+            self.image_processor.start()
+
         
     def clean_filename(self, name):
         name = re.sub(r'[\\/:"*?<>|]', '_', name)

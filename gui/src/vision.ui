@@ -6,17 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1983</width>
-    <height>833</height>
+    <width>1710</width>
+    <height>917</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="font">
    <font>
     <pointsize>10</pointsize>
    </font>
   </property>
+  <property name="tabletTracking">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>INSTEAD</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../../Downloads/f046c48a-0a5f-43a6-93cd-e82bdb76511f.jpeg</normaloff>../../../../Downloads/f046c48a-0a5f-43a6-93cd-e82bdb76511f.jpeg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="button1_4">
@@ -48,7 +61,7 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>50</x>
       <y>60</y>
       <width>1471</width>
       <height>751</height>
@@ -80,8 +93,8 @@
      <widget class="QPushButton" name="startButton">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>200</y>
+        <x>1030</x>
+        <y>320</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -93,8 +106,8 @@
      <widget class="QPushButton" name="snapButton">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>240</y>
+        <x>1030</x>
+        <y>360</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -106,105 +119,14 @@
      <widget class="QPushButton" name="camConfig">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>280</y>
+        <x>1030</x>
+        <y>400</y>
         <width>88</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
        <string>Cam Config</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_24">
-      <property name="geometry">
-       <rect>
-        <x>1160</x>
-        <y>200</y>
-        <width>91</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Crop</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>1160</x>
-        <y>230</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Open</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button">
-      <property name="geometry">
-       <rect>
-        <x>880</x>
-        <y>100</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="start_button">
-      <property name="geometry">
-       <rect>
-        <x>980</x>
-        <y>100</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Start</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pause_button">
-      <property name="geometry">
-       <rect>
-        <x>1080</x>
-        <y>100</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Stop</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="reset_button">
-      <property name="geometry">
-       <rect>
-        <x>1180</x>
-        <y>100</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Reset</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>1060</x>
-        <y>60</y>
-        <width>111</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Timer</string>
       </property>
      </widget>
      <widget class="QFrame" name="frame">
@@ -226,8 +148,8 @@
      <widget class="QLabel" name="label_26">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>170</y>
+        <x>1030</x>
+        <y>290</y>
         <width>111</width>
         <height>18</height>
        </rect>
@@ -291,8 +213,8 @@
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>340</y>
+        <x>1020</x>
+        <y>110</y>
         <width>231</width>
         <height>16</height>
        </rect>
@@ -304,8 +226,8 @@
      <widget class="QLineEdit" name="fileName">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>360</y>
+        <x>1020</x>
+        <y>130</y>
         <width>171</width>
         <height>20</height>
        </rect>
@@ -322,8 +244,8 @@
      <widget class="QLabel" name="label_32">
       <property name="geometry">
        <rect>
-        <x>900</x>
-        <y>150</y>
+        <x>760</x>
+        <y>240</y>
         <width>81</width>
         <height>18</height>
        </rect>
@@ -335,8 +257,8 @@
      <widget class="QPushButton" name="startSampling">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>110</y>
+        <x>760</x>
+        <y>370</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -348,8 +270,8 @@
      <widget class="QLineEdit" name="amount_input">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>110</y>
+        <x>760</x>
+        <y>200</y>
         <width>113</width>
         <height>32</height>
        </rect>
@@ -361,8 +283,8 @@
      <widget class="QLabel" name="label_33">
       <property name="geometry">
        <rect>
-        <x>900</x>
-        <y>80</y>
+        <x>760</x>
+        <y>180</y>
         <width>81</width>
         <height>18</height>
        </rect>
@@ -375,7 +297,7 @@
       <property name="geometry">
        <rect>
         <x>810</x>
-        <y>30</y>
+        <y>10</y>
         <width>111</width>
         <height>18</height>
        </rect>
@@ -387,8 +309,8 @@
      <widget class="QLineEdit" name="delay_input">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>170</y>
+        <x>760</x>
+        <y>260</y>
         <width>113</width>
         <height>32</height>
        </rect>
@@ -400,8 +322,8 @@
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>30</y>
+        <x>120</x>
+        <y>40</y>
         <width>171</width>
         <height>18</height>
        </rect>
@@ -413,8 +335,8 @@
      <widget class="QPushButton" name="refreshScreen">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>150</y>
+        <x>760</x>
+        <y>410</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -436,8 +358,8 @@
      <widget class="QLineEdit" name="repetition_input">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>230</y>
+        <x>760</x>
+        <y>320</y>
         <width>113</width>
         <height>32</height>
        </rect>
@@ -449,44 +371,47 @@
      <widget class="QLabel" name="label_34">
       <property name="geometry">
        <rect>
-        <x>830</x>
-        <y>210</y>
-        <width>291</width>
+        <x>760</x>
+        <y>300</y>
+        <width>151</width>
         <height>18</height>
        </rect>
       </property>
       <property name="text">
-       <string>How many repetition? must be more than 1</string>
+       <string>How many repetition?</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>900</x>
-        <y>280</y>
+        <x>760</x>
+        <y>120</y>
         <width>201</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>Filename (series_sample)</string>
+       <string>Filename: </string>
       </property>
      </widget>
      <widget class="QLineEdit" name="fileName_csv">
       <property name="geometry">
        <rect>
-        <x>890</x>
-        <y>300</y>
+        <x>760</x>
+        <y>140</y>
         <width>141</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="text">
+       <string>series_sample</string>
       </property>
      </widget>
      <widget class="QLCDNumber" name="repetition_times">
       <property name="geometry">
        <rect>
-        <x>720</x>
-        <y>300</y>
+        <x>590</x>
+        <y>40</y>
         <width>71</width>
         <height>23</height>
        </rect>
@@ -495,8 +420,8 @@
      <widget class="QLabel" name="label_35">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>270</y>
+        <x>430</x>
+        <y>40</y>
         <width>181</width>
         <height>18</height>
        </rect>
@@ -508,14 +433,40 @@
      <widget class="QPushButton" name="open_folder">
       <property name="geometry">
        <rect>
-        <x>710</x>
-        <y>370</y>
+        <x>760</x>
+        <y>80</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Open Save Folder</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>60</y>
+        <width>201</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Open File:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="startSampling_2">
+      <property name="geometry">
+       <rect>
+        <x>910</x>
+        <y>140</y>
         <width>88</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>Open Folder</string>
+       <string>Apply</string>
       </property>
      </widget>
     </widget>
@@ -523,7 +474,7 @@
      <attribute name="title">
       <string>Histo</string>
      </attribute>
-     <widget class="QFrame" name="frame_3">
+     <widget class="QFrame" name="crop_image">
       <property name="geometry">
        <rect>
         <x>710</x>
@@ -542,8 +493,8 @@
      <widget class="QPushButton" name="pushButton_3">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>640</y>
+        <x>270</x>
+        <y>670</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -555,21 +506,21 @@
      <widget class="QPushButton" name="pushButton_4">
       <property name="geometry">
        <rect>
-        <x>570</x>
-        <y>640</y>
+        <x>400</x>
+        <y>670</y>
         <width>88</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>get Hist</string>
+       <string>get Plot</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_5">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>640</y>
+        <x>140</x>
+        <y>670</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -581,14 +532,14 @@
      <widget class="QPushButton" name="pushButton_6">
       <property name="geometry">
        <rect>
-        <x>820</x>
-        <y>640</y>
+        <x>510</x>
+        <y>670</y>
         <width>88</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>save Hist</string>
+       <string>save Hist?</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
@@ -620,8 +571,8 @@
      <widget class="QPushButton" name="clearCropped">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>580</y>
+        <x>10</x>
+        <y>670</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -648,8 +599,8 @@
       <widget class="QLabel" name="cropShow">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>0</y>
+         <x>80</x>
+         <y>-30</y>
          <width>640</width>
          <height>480</height>
         </rect>
@@ -662,8 +613,77 @@
        </property>
       </widget>
      </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>620</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>600</y>
+        <width>52</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X-axis:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>600</y>
+        <width>52</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y-axis:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>620</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>620</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>600</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Radius (pixel)</string>
+      </property>
+     </widget>
      <zorder>frame_4</zorder>
-     <zorder>frame_3</zorder>
+     <zorder>crop_image</zorder>
      <zorder>pushButton_3</zorder>
      <zorder>pushButton_4</zorder>
      <zorder>pushButton_5</zorder>
@@ -671,6 +691,12 @@
      <zorder>label_3</zorder>
      <zorder>label_4</zorder>
      <zorder>clearCropped</zorder>
+     <zorder>doubleSpinBox</zorder>
+     <zorder>label_8</zorder>
+     <zorder>label_9</zorder>
+     <zorder>doubleSpinBox_2</zorder>
+     <zorder>doubleSpinBox_3</zorder>
+     <zorder>label_10</zorder>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
