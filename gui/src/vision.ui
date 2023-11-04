@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1710</width>
+    <width>1579</width>
     <height>917</height>
    </rect>
   </property>
@@ -72,7 +72,7 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Cam</string>
+      <string>Vision Sensor</string>
      </attribute>
      <widget class="QLabel" name="label_2">
       <property name="geometry">
@@ -95,12 +95,12 @@
        <rect>
         <x>1030</x>
         <y>320</y>
-        <width>88</width>
+        <width>121</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>Play/Pause</string>
+       <string>Freeze</string>
       </property>
      </widget>
      <widget class="QPushButton" name="snapButton">
@@ -108,12 +108,12 @@
        <rect>
         <x>1030</x>
         <y>360</y>
-        <width>88</width>
+        <width>121</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>Snapshot</string>
+       <string>Take Picture</string>
       </property>
      </widget>
      <widget class="QPushButton" name="camConfig">
@@ -121,12 +121,38 @@
        <rect>
         <x>1030</x>
         <y>400</y>
+        <width>121</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Configuration</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_24">
+      <property name="geometry">
+       <rect>
+        <x>1250</x>
+        <y>220</y>
+        <width>91</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Crop</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>1250</x>
+        <y>250</y>
         <width>88</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>Cam Config</string>
+       <string>Open</string>
       </property>
      </widget>
      <widget class="QFrame" name="frame">
@@ -236,10 +262,35 @@
        <string>Please type the name</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="comboBox">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>430</y>
+        <width>69</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </item>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Sensor</string>
+      <string>Camera Sensor</string>
      </attribute>
      <widget class="QLabel" name="label_32">
       <property name="geometry">
@@ -454,19 +505,6 @@
       </property>
       <property name="text">
        <string>Open File:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="startSampling_2">
-      <property name="geometry">
-       <rect>
-        <x>910</x>
-        <y>140</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Apply</string>
       </property>
      </widget>
     </widget>

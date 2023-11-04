@@ -1,53 +1,26 @@
 import sys
-import cv2 as cv
-from PyQt5.QtCore import QTimer, QTime, QObject
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog, QRadioButton, QFrame
-from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame, QLCDNumber
 import configparser
-from PyQt5 import uic, QtWidgets
 import cv2 as cv
-import sys
-from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
 import datetime
 import csv, re
-import serial, threading
-import subprocess
-import serial
-import datetime
-import csv
-import serial.tools.list_ports
 import os
-import sys
-from PyQt5.QtGui import QTextCursor
-from io import StringIO
 import serial
-import serial.tools.list_ports
-import datetime
-import sys
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QThread, pyqtSignal
-import serial
-import datetime
-import time
-import threading
-import os
-import sys
-import threading
-import serial
-import datetime
-import csv
-import time
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
-from tqdm import tqdm
-from PyQt5 import QtCore,QtWidgets
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
-from matplotlib import pyplot as plt
 import numpy as np
-
+import subprocess
+import serial.tools.list_ports
+from PyQt5.QtCore import QTimer, QTime
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame
+from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel
+from PyQt5 import QtCore,QtWidgets,uic
+from matplotlib import pyplot as plt
+from io import StringIO
+from tqdm import tqdm
 
 from Camera import Camera
 
@@ -436,7 +409,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
 
         super().__init__()
-        vision =os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\vision.ui")
+        vision =os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\vision_revisi.ui")
         # uic.loadUi("C:\\Users\\Lyskq\\Downloads\\gui\\vision.ui", self)
         uic.loadUi(vision, self)
         self.initUI()
@@ -481,6 +454,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.camera_layout = QVBoxLayout(self.camera_frame)
         self.layout.addWidget(self.camera_frame)
         
+        self.startButton_2.clicked.connect(self.togglePlayback)
         self.startButton.clicked.connect(self.togglePlayback)
         self.snapButton.clicked.connect(self.save_filename)
 
@@ -504,9 +478,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.stopSampling.clicked.connect(self.stop_collection)
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
+        self.open_folder_2.clicked.connect(self.openFolder)
         # self.refreshScreen2.clicked.connect(self.clearSerial)
         # self.saveSensor.clicked.connect(self.save_collection)
-        self.clearCropped.clicked.connect(self.clearCrop)
+        # self.clearCropped.clicked.connect(self.clearCrop)
 
         self.log_display.setReadOnly(True)
         sys.stdout = TextStream(self.log_display)
@@ -543,10 +518,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.file_layout = QVBoxLayout(self.file_frame)
         self.layout.addWidget(self.file_frame)
 
+        # self.cameraSelect = QtWidgets.QComboBox(self)
+        # self.cameraSelect.addItem("Camera 1", 0)
+        # self.cameraSelect.addItem("Camera 2", 1)
+        # self.cameraSelect.addItem("Camera 3", 2)
+        # self.cameraSelect.currentIndexChanged.connect(self.handleCameraSelection)
+        self.cameraSelect.currentIndexChanged.connect(lambda index: self.changeCameraIndex(self.cameraSelect.itemData(index)))
+
+
         # Connect radio button signals
-        self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
-        self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
-        self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
+        # self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
+        # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
+        # self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
 
         
         # self.find_port()
@@ -577,6 +560,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             amount = int(amount_text)
             repetition = int(repetition_text)
 
+
+            remainingTime = ((delay* amount)/60000)
+            self.estimatedTime.display(remainingTime)
+
             self.sensor_name = f"{self.fileName_csv.text()}"
             csv_name = f"{self.sensor_name}"
             
@@ -598,6 +585,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.log_display.append(text)
 
     def thread_finished(self):
+        
         QMessageBox.information(self, "Data collection","complete")
         self.log_display.append("Data collection completed.")
 
@@ -615,8 +603,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def clearSerial(self):
         self.log_display.clear()
 
-    def clearCrop(self):
-        self.cropShow.clear()
+    # def clearCrop(self):
+    #     self.cropShow.clear()
 
     def handle_data_collected(self):
         # self.log_display.append(f"Collected data: {int_values}")
@@ -704,6 +692,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             self.timer.start(30)
         self.playback = not self.playback
+        
 
     def save_filename(self):
         # self.sample_name = self.fileName.text()
@@ -775,8 +764,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
             print(f"Image saved as {file_name_with_extension}")
           
-            screenshot_pixmap = QPixmap(file_name_with_extension)
-            self.cropShow.setPixmap(screenshot_pixmap)
+            # screenshot_pixmap = QPixmap(file_name_with_extension)
+            # self.cropShow.setPixmap(screenshot_pixmap)
 
         message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
         QMessageBox.information(self, "File Saved", message)
