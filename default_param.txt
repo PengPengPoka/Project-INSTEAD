@@ -1,0 +1,13 @@
+[CameraSettings]
+exposure = -4
+brightness = 128
+contrast = 128
+saturation = 128
+sharpness = 128
+white_balance = 2629
+gain = 0
+zoom = 100
+focus = 35
+pan = 0
+tilt = 0
+
