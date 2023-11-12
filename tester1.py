@@ -26,14 +26,6 @@ from Camera import Camera
 
 sampling_active = False
 
-def crop_trackbar(height, width, px, py, radius, src):
-    canvas = np.zeros((height, width, 3), dtype=np.uint8)
-    img = src.copy()
-
-    cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
-
-    cropped = cv.bitwise_and(img, canvas, mask=None)
-    return cropped
 
 # class ImageProcessor(QThread):
 #     image_processed = pyqtSignal(QImage)
@@ -77,6 +69,14 @@ def crop_trackbar(height, width, px, py, radius, src):
 #                 q_image = QImage(img_rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
 
 #                 self.image_processed.emit(q_image)
+def crop_trackbar(height, width, px, py, radius, src):
+    canvas = np.zeros((height, width, 3), dtype=np.uint8)
+    img = src.copy()
+
+    cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
+
+    cropped = cv.bitwise_and(img, canvas, mask=None)
+    return cropped
 
 class ImageProcessor(QThread):
     image_processed = pyqtSignal(QImage)
@@ -109,7 +109,6 @@ class ImageProcessor(QThread):
                 bytes_per_line = ch * w
                 q_image = QImage(img_rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
                 self.image_processed.emit(q_image)
-
 
 
 class DataSamplingThread(QtCore.QThread):
@@ -497,7 +496,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateFrame)
-        selfs.timer.timeout.connect(self.update_image_period)
+        self.timer.timeout.connect(self.update_image_period)
         self.playback = False
         
         self.count = 0
