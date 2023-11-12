@@ -262,8 +262,12 @@ sampling_active = False
 #         self.result_ready.emit(cropped)
 
 class ImageProcessor(QtCore.QThread):
+    result_ready = pyqtSignal(np.ndarray)
+
     def __init__(self, img_path):
+        super(ImageProcessor, self).__init__()
         self.img = cv.imread(img_path)
+
 
     def crop_image(self, x, y, radius):
         height, width, _ = self.img.shape
@@ -736,11 +740,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.xVal.valueChanged.connect(self.update_image)
         self.yVal.valueChanged.connect(self.update_image)
         self.radVal.valueChanged.connect(self.update_image)
-
+        self.openImage.clicked.connect(self.open_file_dialog)
+        self.clearCropped_2.clicked.connect(self.clearCrop)
 
         self.set_default_slider_positions()
+        self.clearCrop()
+        self.clearSerial()
 
-        self.crop_image()
+        # self.crop_image()
         # Connect radio button signals
         # self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
@@ -748,6 +755,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         
         # self.find_port()
+
+    def open_file_dialog(self):
+        file_dialog = QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.bmp *.jpeg)")
+        if file_path:
+            self.image_processor.img = cv.imread(file_path)
+            self.image_processor.start()
 
     def open_image(self):
         file_dialog = QFileDialog()
@@ -933,6 +947,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # def clearCrop(self):
     #     self.cropShow.clear()
+
+    def clearCrop(self):
+        # self.cropShow.clear()
+        self.cropShow_2.clear()
+        self.cropResult.clear()
+
 
     def handle_data_collected(self):
         # self.log_display.append(f"Collected data: {int_values}")
