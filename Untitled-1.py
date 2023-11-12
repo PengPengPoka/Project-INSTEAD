@@ -100,12 +100,10 @@ import serial
 import numpy as np
 import subprocess
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer, QTime
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QTimer, QTime,QThread, pyqtSignal,QMutex, QMutexLocker
 from PyQt5.QtCore import QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame
+from PyQt5.QtGui import QImage, QPixmap,QTextCursor
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy
 from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel
@@ -113,63 +111,166 @@ from PyQt5 import QtCore,QtWidgets,uic
 from matplotlib import pyplot as plt
 from io import StringIO
 from tqdm import tqdm
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 
 from Camera import Camera
 
 sampling_active = False
 
-def crop_trackbar(height, width, px, py, radius, src):
-    canvas = np.zeros((height, width, 3), dtype=np.uint8)
-    img = src.copy()
+# def crop_trackbar(height, width, px, py, radius, src):
+#     canvas = np.zeros((height, width, 3), dtype=np.uint8)
+#     img = src.copy()
 
-    cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
+#     cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
 
-    cropped = cv.bitwise_and(img, canvas, mask=None)
-    return cropped
+#     cropped = cv.bitwise_and(img, canvas, mask=None)
+#     return cropped
 
-class ImageProcessor(QThread):
-    image_processed = pyqtSignal(QImage)
+# class ImageProcessor(QThread):
+#     image_processed = pyqtSignal(QImage)
 
-    def __init__(self, img_path, parent=None):
-        super(ImageProcessor, self).__init__(parent)
-        self.ui = Ui_MainWindow()
-        # self.img_path = img_path
-        self.img_path = None
-        self.file_name = None
+#     def __init__(self, img_path, parent=None):
+#         super(ImageProcessor, self).__init__(parent)
+#         self.ui = Ui_MainWindow()
+#         # self.img_path = img_path
+#         self.img_path = None
+#         self.file_name = None
     
-    def set_image_path(self, img_path):
-        self.img_path = img_path
+#     def set_image_path(self, img_path):
+#         self.img_path = img_path
 
 
-    @Slot(str)
-    def receive_file_name(self, file_name):
-        self.file_name = file_name
-        self.set_image_path(file_name)  # Set the image path when file_name is received
+#     @Slot(str)
+#     def receive_file_name(self, file_name):
+#         self.file_name = file_name
+#         self.set_image_path(file_name)  # Set the image path when file_name is received
+
+#     def run(self):
+#         if self.img_path is not None:
+
+#             img = cv.imread(self.img_path)
+#             height, width, _ = img.shape
+
+#             while True:
+#                 x = cv.getTrackbarPos("x space", "crop trackbar")
+#                 y = cv.getTrackbarPos("y space", "crop trackbar")
+#                 radius = cv.getTrackbarPos("radius", "crop trackbar")
+
+#                 img_copy = img.copy()
+#                 cv.circle(img_copy, (x, y), radius, [0, 0, 255], 2)
+
+#                 crop_img = crop_trackbar(height, width, x, y, radius, img)
+
+#                 # Convert the processed image to a QImage for display
+#                 img_rgb = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
+#                 h, w, ch = img_rgb.shape
+#                 bytes_per_line = ch * w
+#                 q_image = QImage(img_rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+
+#                 self.image_processed.emit(q_image)
+
+class ImageProcessingThread(QThread):
+    updateImage = pyqtSignal(np.ndarray)
+
+    def __init__(self, image, x, y, radius):
+        super(ImageProcessingThread, self).__init__()
+        self.image = image
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.running = False
+        self.mutex = QMutex()
 
     def run(self):
-        if self.img_path is not None:
+        self.running = True
+        while self.running:
+            # Your image processing logic goes here
+            Ui_MainWindow.file_name_signal.connect(self.process_image)
+            processed_image = self.process_image(self.image, self.x, self.y, self.radius)
+            self.updateImage.emit(processed_image)
+            self.msleep(100)  # Adjust the sleep time as needed
 
-            img = cv.imread(self.img_path)
-            height, width, _ = img.shape
+    def stop(self):
+        with QMutexLocker(self.mutex):
+            self.running = False
 
-            while True:
-                x = cv.getTrackbarPos("x space", "crop trackbar")
-                y = cv.getTrackbarPos("y space", "crop trackbar")
-                radius = cv.getTrackbarPos("radius", "crop trackbar")
+    def crop_trackbar(height, width,px,py,radius,src):
+        canvas = np.zeros((height, width, 3), dtype=np.uint8)
+        img = src.copy()
 
-                img_copy = img.copy()
-                cv.circle(img_copy, (x, y), radius, [0, 0, 255], 2)
+        cv.circle(canvas, (px,py), radius, [255,255,255], cv.FILLED)
 
-                crop_img = crop_trackbar(height, width, x, y, radius, img)
+        cropped = cv.bitwise_and(img, canvas,mask=None)
 
-                # Convert the processed image to a QImage for display
-                img_rgb = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
-                h, w, ch = img_rgb.shape
-                bytes_per_line = ch * w
-                q_image = QImage(img_rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        return cropped
 
-                self.image_processed.emit(q_image)
+    def process_image(self, image, x, y, radius,name):
+        self.img_path = name
+        img = cv.imread(self.img_path)
 
+        height = img.shape[0]
+        width = img.shape[1]
+        channel = img.shape[2]
+
+        img_copy = img.copy()
+        cv.circle(img_copy, (x,y),radius,[0,0,255],2)
+
+        crop_img = self.crop_trackbar(height, width, x, y, radius, img)
+
+
+        # canvas = np.zeros_like(image, dtype=np.uint8)
+        # img = image.copy()
+
+        # cv.circle(canvas, (x, y), radius, [255, 255, 255], cv.FILLED)
+        # cropped = cv.bitwise_and(img, canvas, mask=None)
+
+        # return cropped
+    
+# class MatplotlibCanvas(FigureCanvas):
+#     def __init__(self, parent=None, width=5, height=4, dpi=100):
+#         fig = Figure(figsize=(width, height), dpi=dpi)
+#         self.axes = fig.add_subplot(111)
+#         super(MatplotlibCanvas, self).__init__(fig)
+#         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+#         self.updateGeometry()
+
+# class ImageProcessor(QThread):
+#     result_ready = pyqtSignal(np.ndarray)
+
+#     def __init__(self, img_path, parent=None):
+#         super(ImageProcessor, self).__init__(parent)
+#         self.img_path = img_path
+#         self.x = 0
+#         self.y = 0
+#         self.radius = 0
+
+#     def set_values(self, x, y, radius):
+#         self.x = x
+#         self.y = y
+#         self.radius = radius
+
+#     def run(self):
+#         img = cv.imread(self.img_path)
+#         height, width, _ = img.shape
+
+#         canvas = np.zeros((height, width, 3), dtype=np.uint8)
+#         cv.circle(canvas, (self.x, self.y), self.radius, [255, 255, 255], cv.FILLED)
+
+#         cropped = cv.bitwise_and(img, canvas, mask=None)
+#         self.result_ready.emit(cropped)
+
+class ImageProcessor(QtCore.QThread):
+    def __init__(self, img_path):
+        self.img = cv.imread(img_path)
+
+    def crop_image(self, x, y, radius):
+        height, width, _ = self.img.shape
+        canvas = np.zeros((height, width, 3), dtype=np.uint8)
+        cv.circle(canvas, (x, y), radius, [255, 255, 255], cv.FILLED)
+        cropped = cv.bitwise_and(self.img, canvas, mask=None)
+        return cropped
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -528,11 +629,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # crop_path = os.path.dirname(self.file_name)
         # crop_path = os.path.dirname(Ui_MainWindow.file_name)
         # crop_path = os.path.dirname(self.file_name)
+        self.img_path = None
+        self.img = None
+        self.x = 0
+        self.y = 0
+        self.radius = 0
+
+        # self.image_processing_thread = ImageProcessingThread(None, 0, 0, 0)
+        # self.image_processing_thread.updateImage.connect(self.update_image_label)
+
+        # self.matplotlib_canvas = MatplotlibCanvas(self, width=5, height=4, dpi=100)
+        # self.layout.addWidget(self.matplotlib_canvas)
+        # self.widget.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+
 
         pass
 
     # message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
-
 
     def initUI(self):
         self.data_collector = None
@@ -557,30 +670,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         self.count = 0
         self.start = False
-        # self.button.clicked.connect(self.get_seconds)
-        # self.start_button.clicked.connect(self.start_action)
-        # self.pause_button.clicked.connect(self.pause_action)
-        # self.reset_button.clicked.connect(self.reset_action)
+    
         self.camConfig.clicked.connect(self.config_action)
-        # self.startSampling.clicked.connect(self.start_collection)
         self.startSampling.clicked.connect(self.start_sampling)
         self.startSampling.clicked.connect(self.start_timer)
-        # self.startSampling.clicked.connect(self.find_port)
-        # self.startSampling.clicked.connect(self.startMulti)
-        # self.stopSampling.clicked.connect(self.stop_collection)
+
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
         self.open_folder_2.clicked.connect(self.openFolder)
-        # self.refreshScreen2.clicked.connect(self.clearSerial)
-        # self.saveSensor.clicked.connect(self.save_collection)
-        # self.clearCropped.clicked.connect(self.clearCrop)
 
         self.log_display.setReadOnly(True)
         sys.stdout = TextStream(self.log_display)
         self.log_display.clear()
         
-        # self.log_display_2.setReadOnly(True)
-        # sys.stdout = TextStream(self.log_display_2)
 
         self.timer2 = QTimer(self)
         self.timer2.timeout.connect(self.showTime)
@@ -617,7 +719,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.cameraSelect.currentIndexChanged.connect(self.handleCameraSelection)
         self.cameraSelect.currentIndexChanged.connect(lambda index: self.changeCameraIndex(self.cameraSelect.itemData(index)))
 
+        # self.xValue.setValue(self.x())
+        # self.yValue.setValue(self.y())
+        # self.radValue.setValue(self.radius())
+        # self.getPlot.clicked.connect(self.start_image_processing)
+        self.cropButton.clicked.connect(self.crop_image)
+        self.openImage.clicked.connect(self.open_image)
 
+        self.image_processor = ImageProcessor(img_path="C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\ObjectType_Series_3.jpg")
+
+        
+        self.xValue.setValue(320)
+        self.yValue.setValue(240)
+        self.radValue.setValue(50)
         # Connect radio button signals
         # self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
@@ -626,10 +740,73 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         # self.find_port()
 
-    def update_image(self, image):
-        pixmap = QPixmap.fromImage(image)
-        self.crop_image.setPixmap(pixmap)
-        # self.cropShow.setPixmap(QPixmap.fromImage(q_image))
+    def open_image(self):
+        file_dialog = QFileDialog()
+        file_name, _ = file_dialog.getOpenFileName(self, 'Open Image File', '', 'Images (*.png *.jpg)')
+
+        if file_name:
+            self.img_path = file_name
+            self.img = cv.imread(self.img_path)
+            if self.img is not None:
+                self.x = self.xValue.value()
+                self.y = self.yValue.value()
+                self.radius = self.radValue.value()
+                self.update_image()
+            else:
+                QMessageBox.critical(self, "Error", "Failed to read image.")
+        else:
+            QMessageBox.warning(self, "Warning", "Please select an image first.")
+    
+    def crop_image(self):
+        x_value = self.xValue.value()
+        y_value = self.yValue.value()
+        radius_value = self.radValue.value()
+
+        # Perform cropping
+        cropped_image = self.image_processor.crop_image(x_value, y_value, radius_value)
+
+        # Display cropped image on QLabel
+        self.display_processed_image(cropped_image)
+
+    # def start_image_processing(self):
+    #     x_value = self.xValue.value()
+    #     y_value = self.yValue.value()
+    #     radius_value = self.radValue.value()
+
+        # image_processor = ImageProcessor(img_path="C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\ObjectType_Series_3.jpg")
+        # image_processor.result_ready.connect(self.display_processed_image)
+        # image_processor.set_values(x_value, y_value, radius_value)
+        # image_processor.start()
+
+    def display_processed_image(self, result):
+        # cv.imshow("Processed Image", result)
+        # cv.waitKey(0)
+        # cv.destroyAllWindows()
+        height, width, channel = result.shape
+        bytes_per_line = 3 * width
+        q_image = QImage(result.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+        pixmap = QPixmap.fromImage(q_image)
+
+        self.cropResult.setPixmap(pixmap)
+
+
+
+    # def update_image(self):
+    #     if self.img is not None:
+    #         thread = ImageProcessingThread(self.img, self.x, self.y, self.radius)
+    #         thread.updateImage.connect(self.update_image_label)
+    #         thread.start()
+
+    # def update_image_label(self, image):
+    #     screenshot_pixmap = self.convert_ndarray_to_pixmap(image)
+    #     self.cropShow_2.setPixmap(screenshot_pixmap)
+
+    # def convert_ndarray_to_pixmap(self, img):
+    #     height, width, channel = img.shape
+    #     bytes_per_line = 3 * width
+    #     q_image = QPixmap.fromImage(QImage(img.data, width, height, bytes_per_line, QImage.Format_RGB888))
+    #     return q_image
 
 
     def update_gui(self,data):
@@ -811,9 +988,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.file_name=file_name
             self.file_name_signal.emit(file_name)
 
-            self.image_processor = ImageProcessor(file_name)
-            self.image_processor.image_processed.connect(self.update_image)
-            self.image_processor.start()
+            # self.image_processor = ImageProcessor(file_name)
+            # self.image_processor.image_processed.connect(self.update_image)
+            # self.image_processor.start()
+            directory_path = os.path.dirname(file_name)
+
 
         
     def clean_filename(self, name):
@@ -855,12 +1034,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             cv.imwrite(file_name_with_extension, frame)
 
             print(f"Image saved as {file_name_with_extension}")
-          
-            # screenshot_pixmap = QPixmap(file_name_with_extension)
-            # self.cropShow.setPixmap(screenshot_pixmap)
+        
+            screenshot_pixmap = QPixmap(file_name_with_extension)
+            self.cropShow_2.setPixmap(screenshot_pixmap)
 
         message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
         QMessageBox.information(self, "File Saved", message)
+        path= {os.path.dirname(file_name)}
 
     def takeScreenshot(self):
         self.sample_name = self.fileName.text()
