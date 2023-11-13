@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1358</width>
-    <height>818</height>
+    <width>2067</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -69,7 +69,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1561</width>
+      <width>2131</width>
       <height>821</height>
      </rect>
     </property>
@@ -955,6 +955,38 @@
       </property>
       <property name="text">
        <string>Radius (pixel)</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>1370</x>
+        <y>60</y>
+        <width>640</width>
+        <height>480</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_37">
+      <property name="geometry">
+       <rect>
+        <x>1620</x>
+        <y>20</y>
+        <width>121</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>HISTOGRAM</string>
       </property>
      </widget>
     </widget>
