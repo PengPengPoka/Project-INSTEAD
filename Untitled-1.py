@@ -745,7 +745,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.clearCrop()
         self.clearSerial()
 
-        image = cv.imread("logo.jpg")
+        # image = cv.imread("logo.jpg")
 
 
         # self.crop_image()
