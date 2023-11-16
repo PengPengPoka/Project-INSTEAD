@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2059</width>
-    <height>807</height>
+    <width>2082</width>
+    <height>1064</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
    <string notr="true">INSTeaD - Integrated Sensors for Tea Quality Detection - Version 1.0.0</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="logo">
+   <iconset>
     <normaloff>logo.png</normaloff>logo.png</iconset>
   </property>
   <property name="autoFillBackground">
@@ -67,10 +67,10 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
       <width>2131</width>
-      <height>821</height>
+      <height>1031</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -648,8 +648,8 @@
      <widget class="QLabel" name="cropResult">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>60</y>
+        <x>400</x>
+        <y>50</y>
         <width>640</width>
         <height>480</height>
        </rect>
@@ -660,8 +660,17 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <property name="lineWidth">
+       <number>3</number>
       </property>
       <property name="text">
        <string>Image</string>
@@ -670,40 +679,30 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QLabel" name="label_19">
-      <property name="geometry">
-       <rect>
-        <x>630</x>
-        <y>600</y>
-        <width>101</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Radius (pixel)</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_20">
       <property name="geometry">
        <rect>
-        <x>330</x>
-        <y>20</y>
-        <width>51</width>
-        <height>18</height>
+        <x>400</x>
+        <y>10</y>
+        <width>641</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
       <property name="text">
-       <string>IMG</string>
+       <string>Image Crop</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QPushButton" name="clearCropped_2">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>720</y>
+        <x>300</x>
+        <y>200</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -712,37 +711,24 @@
        <string>clear</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="saveHist">
+     <widget class="QPushButton" name="Folder">
       <property name="geometry">
        <rect>
-        <x>610</x>
-        <y>720</y>
-        <width>88</width>
+        <x>130</x>
+        <y>200</y>
+        <width>151</width>
         <height>34</height>
        </rect>
       </property>
       <property name="text">
-       <string>save Hist</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="cropButton">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>720</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Crop</string>
+       <string>Open File Folder</string>
       </property>
      </widget>
      <widget class="QPushButton" name="openImage">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>720</y>
+        <x>20</x>
+        <y>200</y>
         <width>88</width>
         <height>34</height>
        </rect>
@@ -751,89 +737,11 @@
        <string>Open</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_25">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>600</y>
-        <width>52</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>X-axis:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_26">
-      <property name="geometry">
-       <rect>
-        <x>530</x>
-        <y>600</y>
-        <width>52</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Y-axis:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="getPlot">
-      <property name="geometry">
-       <rect>
-        <x>500</x>
-        <y>720</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>get Plot</string>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="xValue">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>630</y>
-        <width>42</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>640</number>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="yValue">
-      <property name="geometry">
-       <rect>
-        <x>540</x>
-        <y>630</y>
-        <width>42</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>480</number>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="radValue">
-      <property name="geometry">
-       <rect>
-        <x>650</x>
-        <y>630</y>
-        <width>42</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>480</number>
-      </property>
-     </widget>
      <widget class="QLabel" name="cropShow_2">
       <property name="geometry">
        <rect>
-        <x>710</x>
-        <y>60</y>
+        <x>1050</x>
+        <y>50</y>
         <width>640</width>
         <height>480</height>
        </rect>
@@ -844,8 +752,17 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <property name="lineWidth">
+       <number>3</number>
       </property>
       <property name="text">
        <string>Image</string>
@@ -854,12 +771,12 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QLabel" name="label_21">
+     <widget class="QLabel" name="label_37">
       <property name="geometry">
        <rect>
-        <x>1000</x>
-        <y>20</y>
-        <width>51</width>
+        <x>990</x>
+        <y>540</y>
+        <width>121</width>
         <height>18</height>
        </rect>
       </property>
@@ -867,126 +784,211 @@
        <enum>QFrame::Box</enum>
       </property>
       <property name="text">
-       <string>IMG</string>
-      </property>
-     </widget>
-     <widget class="QSlider" name="xVal">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>580</y>
-        <width>160</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>640</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QSlider" name="yVal">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>620</y>
-        <width>160</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>480</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QSlider" name="radVal">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>660</y>
-        <width>160</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>240</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_27">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>580</y>
-        <width>52</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>X-axis:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_30">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>620</y>
-        <width>52</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Y-axis:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_31">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>660</y>
-        <width>81</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Radius (pixel)</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_37">
-      <property name="geometry">
-       <rect>
-        <x>1620</x>
-        <y>20</y>
-        <width>121</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
        <string>HISTOGRAM</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
-     <widget class="QFrame" name="histoFrame">
+     <widget class="MplWidget" name="MplWidget" native="true">
       <property name="geometry">
        <rect>
-        <x>1390</x>
-        <y>60</y>
-        <width>641</width>
-        <height>481</height>
+        <x>400</x>
+        <y>570</y>
+        <width>1291</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QFrame" name="frame_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>381</width>
+        <height>131</height>
        </rect>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Box</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <widget class="QLabel" name="value_x">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>20</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Value: 320</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QScrollBar" name="yValue">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>60</y>
+         <width>160</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>480</number>
+       </property>
+       <property name="sliderPosition">
+        <number>240</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QScrollBar" name="radValue">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>100</y>
+         <width>160</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>480</number>
+       </property>
+       <property name="sliderPosition">
+        <number>182</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="value_y">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>60</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Value: 240</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_31">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>101</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Radius (pixel)</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_27">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>20</y>
+         <width>52</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>X-axis:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="value_rad">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>100</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Value: 182</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QScrollBar" name="xValue">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>20</y>
+         <width>160</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>640</number>
+       </property>
+       <property name="sliderPosition">
+        <number>320</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_30">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>60</y>
+         <width>52</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Y-axis:</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_21">
+      <property name="geometry">
+       <rect>
+        <x>1050</x>
+        <y>10</y>
+        <width>641</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="text">
+       <string>Image Result</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </widget>
@@ -1068,6 +1070,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplWidget</class>
+   <extends>QWidget</extends>
+   <header>mplwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -50,7 +50,7 @@ def main():
     # home = os.path.expanduser("~")
     # img_path = home + "\\Repositories 2\\Project-INSTEAD\\Data_4-10-2023[5]\\Warna_Rasa\\FI_1-10.jpg"
     # img_path = home + "\\Project_INSTEAD\\src\\ObjectType_Series_3.jpg"
-    img_path = r"C:\Users\Lyskq\Documents\Project_INSTEAD\src\ObjectType_Series_3.jpg"
+    img_path = r"C:\Users\Lyskq\Downloads\DUST_1_10.jpg"
     print(img_path)
     img = cv.imread(img_path)
 

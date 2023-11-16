@@ -103,7 +103,7 @@ import serial.tools.list_ports
 from PyQt5.QtCore import QTimer, QTime,QThread, pyqtSignal,QMutex, QMutexLocker
 from PyQt5.QtCore import QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
 from PyQt5.QtGui import QImage, QPixmap,QTextCursor
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy,QPushButton
 from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel
@@ -112,7 +112,11 @@ from matplotlib import pyplot as plt
 from io import StringIO
 from tqdm import tqdm
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
+
 from matplotlib.figure import Figure
+
+
 
 
 from Camera import Camera
@@ -261,17 +265,17 @@ sampling_active = False
 #         cropped = cv.bitwise_and(img, canvas, mask=None)
 #         self.result_ready.emit(cropped)
 
-class ImageProcessor(QtCore.QThread):
-    def __init__(self, img_path):
-        self.img = cv.imread(img_path)
+# class ImageProcessor(QtCore.QThread):
+#     def __init__(self, img_path):
+#         self.img = cv.imread(img_path)
         
 
-    def crop_image(self, x, y, radius):
-        height, width, _ = self.img.shape
-        canvas = np.zeros((height, width, 3), dtype=np.uint8)
-        cv.circle(canvas, (x, y), radius, [255, 255, 255], cv.FILLED)
-        cropped = cv.bitwise_and(self.img, canvas, mask=None)
-        return cropped
+#     def crop_image(self, x, y, radius):
+#         height, width, _ = self.img.shape
+#         canvas = np.zeros((height, width, 3), dtype=np.uint8)
+#         cv.circle(canvas, (x, y), radius, [255, 255, 255], cv.FILLED)
+#         cropped = cv.bitwise_and(self.img, canvas, mask=None)
+#         return cropped
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -643,6 +647,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.layout.addWidget(self.matplotlib_canvas)
         # self.widget.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
 
+        self
 
         pass
 
@@ -679,6 +684,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
         self.open_folder_2.clicked.connect(self.openFolder)
+        self.Folder.clicked.connect(self.openFolder)
 
         self.log_display.setReadOnly(True)
         sys.stdout = TextStream(self.log_display)
@@ -724,26 +730,39 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.yValue.setValue(self.y())
         # self.radValue.setValue(self.radius())
         # self.getPlot.clicked.connect(self.start_image_processing)
-        self.cropButton.clicked.connect(self.crop_image)
-        self.openImage.clicked.connect(self.open_image)
+        # self.cropButton.clicked.connect(self.crop_image)
 
-        self.image_processor = ImageProcessor(img_path="C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\ObjectType_Series_27.jpg")
+
+        # self.image_processor = ImageProcessor(img_path="C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\ObjectType_Series_27.jpg")
 
         
-        self.xValue.setValue(320)
-        self.yValue.setValue(240)
-        self.radValue.setValue(50)
+        # self.xValue.setValue(320)
+        # self.yValue.setValue(240)
+        # self.radValue.setValue(50)
 
-        self.xVal.valueChanged.connect(self.update_image)
-        self.yVal.valueChanged.connect(self.update_image)
-        self.radVal.valueChanged.connect(self.update_image)
-        self.openImage.clicked.connect(self.open_file_dialog)
+        self.xValue.valueChanged.connect(self.update_image)
+        self.xValue.valueChanged.connect(self.update_sliders)
+        self.xValue.valueChanged.connect(self.updateXValue)
+        self.yValue.valueChanged.connect(self.update_image)
+        self.yValue.valueChanged.connect(self.update_sliders)
+        self.yValue.valueChanged.connect(self.updateYValue)
+        self.radValue.valueChanged.connect(self.update_image)
+        self.radValue.valueChanged.connect(self.update_sliders)
+        self.radValue.valueChanged.connect(self.updateradValue)
+        self.openImage.clicked.connect(self.load_image_dialog)
         self.clearCropped_2.clicked.connect(self.clearCrop)
-        self.getPlot.clicked.connect(self.getHist)
+        # self.getPlot.clicked.connect(self.getHist)
+        self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
+        
 
-        self.set_default_slider_positions()
+
+        # self.set_default_slider_positions()
         self.clearCrop()
         self.clearSerial()
+
+        self.image_original = None
+        self.image_cropped = None
+
 
         # image = cv.imread("logo.jpg")
 
@@ -757,12 +776,121 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         # self.find_port()
 
-    def open_file_dialog(self):
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.bmp *.jpeg)")
-        if file_path:
-            self.image_processor.img = cv.imread(file_path)
-            self.image_processor.start()
+    # def open_file_dialog(self):
+    #     file_dialog = QFileDialog()
+    #     file_path, _ = file_dialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.bmp *.jpeg)")
+    #     if file_path:
+    #         self.image_processor.img = cv.imread(file_path)
+    #         self.image_processor.start()
+
+    def updateXValue(self, value):
+        # self.value_x.setText(f'X Value: {value}')
+        self.value_x.setText(f'Value: {value}')
+        # self.value_y.setText(f'Value: {value}')
+        # self.value_rad.setText(f'Value: {value}')
+
+    def updateYValue(self, value):
+        # self.value_x.setText(f'X Value: {value}')
+        # self.value_x.setText(f'Value: {value}')
+        self.value_y.setText(f'Value: {value}')
+        # self.value_rad.setText(f'Value: {value}')
+    
+    def updateradValue(self, value):
+        # self.value_x.setText(f'X Value: {value}')
+        # self.value_x.setText(f'Value: {value}')
+        # self.value_y.setText(f'Value: {value}')
+        self.value_rad.setText(f'Value: {value}')
+    
+
+    def update_sliders(self):
+        x = self.xValue.value()
+        y = self.yValue.value()
+        radius = self.radValue.value()
+
+        if self.image_original is not None:
+            self.image_circle=self.image_original.copy()
+            self.image_cropped = self.crop_trackbar(x, y, radius)
+
+            self.display_images()
+        self.getHist(self.image_cropped, self.MplWidget.ax)
+        self.MplWidget.ax.figure.canvas.draw()
+
+    def crop_trackbar(self, px, py, radius):
+        canvas = np.zeros_like(self.image_original)
+        cv.circle(canvas, (px, py), radius, [255, 255, 255], cv.FILLED)
+        cv.circle(self.image_circle, (px, py), radius, [125, 255, 125], 2)
+
+        cropped = cv.bitwise_and(self.image_original, canvas, mask=None)
+        return cropped
+
+    def getHist(self, image, ax):
+        ax.clear()
+        non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
+
+        color = ['b', 'g', 'r']
+        for channel, col in enumerate(color):
+            histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0, 256])
+            ax.plot(histogram, color=col)
+            ax.set_xlim(0, 256)
+
+        ax.set_xlabel("RGB values")
+        ax.set_ylabel("Pixel Frequency")
+        ax.set_title("RGB values")
+
+    def load_image_dialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Image Files (*.png *.jpg *.bmp);;All Files (*)", options=options)
+
+        if file_name:
+            self.image_original = cv.imread(file_name)
+            self.image_cropped = self.image_original.copy()
+
+            self.image_cropped = cv.cvtColor(self.image_cropped, cv.COLOR_BGR2RGB)
+            self.image_original = cv.cvtColor(self.image_original, cv.COLOR_BGR2RGB)
+            #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+
+
+            self.update_sliders()
+            self.display_images()
+    
+    def display_images(self):
+        if self.image_cropped is not None:
+            height, width, channel = self.image_cropped.shape
+            bytes_per_line = 3 * width
+            q_image_cropped = QPixmap.fromImage(QImage(self.image_cropped.data, width, height, bytes_per_line, QImage.Format_RGB888))
+            self.cropShow_2.setPixmap(q_image_cropped)
+        
+        if self.image_circle is not None:
+            height, width, channel = self.image_circle.shape
+            bytes_per_line = 3 * width
+            q_img = QImage(self.image_circle.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(q_img)
+            self.cropResult.setPixmap(pixmap)
+
+
+    def update_image(self):
+        img_path = r"C:\Users\Lyskq\Documents\Project_INSTEAD\src\ObjectType_Series_27.jpg"
+        img = cv.imread(img_path)
+        # img = cv.imread(file_name(img_path))
+
+
+        x = self.xValue.value()
+        y = self.yValue.value()
+        radius = self.radValue.value()
+        img_copy = img.copy()
+        # cv.circle(img_copy, (x, y), radius, [125, 125, 255], 2)
+
+########################
+        # crop_img = self.crop_trackbar(img.shape[0], img.shape[1], x, y, radius, img)
+########################
+        height, width, channel = img.shape
+        bytes_per_line = 3 * width
+        q_img = QImage(img_copy.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(q_img)
+        self.cropResult.setPixmap(pixmap)
+#############################
+        # self.crop_image()
 
     def open_image(self):
         file_dialog = QFileDialog()
@@ -782,22 +910,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox.warning(self, "Warning", "Please select an image first.")
 
-    def set_default_slider_positions(self):
-        self.xVal.setValue(320)
-        self.yVal.setValue(240)
-        self.radVal.setValue(50)
+    # def set_default_slider_positions(self):
+    #     self.xValue.setValue(320)
+    #     self.yValue.setValue(240)
+    #     self.radValue.setValue(50)
     
     def crop_image(self):
         # x_value = self.xValue.value()
         # y_value = self.yValue.value()
         # radius_value = self.radValue.value()
-        x_value = self.xVal.value()
-        y_value = self.yVal.value()
-        radius_value = self.radVal.value()
+        x_value = self.xValue.value()
+        y_value = self.yValue.value()
+        radius_value = self.radValue.value()
 
 
         # Perform cropping
-        cropped_image = self.image_processor.crop_image(x_value, y_value, radius_value)
+        # cropped_image = self.image_processor.crop_image(x_value, y_value, radius_value)
 
         # Display cropped image on QLabel
         self.display_processed_image(cropped_image)
@@ -825,79 +953,56 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.cropResult.setPixmap(pixmap)
         self.cropShow_2.setPixmap(pixmap)
 
-    def update_image(self):
-        img_path = r"C:\Users\Lyskq\Documents\Project_INSTEAD\src\ObjectType_Series_27.jpg"
-        img = cv.imread(img_path)
-        # img = cv.imread(file_name(img_path))
+    # def getHist(self,image):
+    #     non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
 
+    #     color = ['b','g','r']
+    #     # for channel, col in enumerate(color):
+    #     #     histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0,256])
+    #     #     plt.plot(histogram, color=col)
+    #     #     plt.xlim(0,256)
 
-        x = self.xVal.value()
-        y = self.yVal.value()
-        radius = self.radVal.value()
+    #     # plt.xlabel("RGB values")
+    #     # plt.ylabel("Pixel Frequency")
+    #     # plt.title("RGB values")
+    #     # plt.show()
 
-        img_copy = img.copy()
-        cv.circle(img_copy, (x, y), radius, [125, 125, 255], 2)
+    #       # Create a Matplotlib figure and axes
+    #     fig, ax = plt.subplots()
 
-        crop_img = self.crop_trackbar(img.shape[0], img.shape[1], x, y, radius, img)
+    #     for channel, col in enumerate(color):
+    #         histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0, 256])
+    #         ax.plot(histogram, color=col)
+    #         ax.set_xlim(0, 256)
 
-        height, width, channel = img.shape
-        bytes_per_line = 3 * width
-        q_img = QImage(img_copy.data, width, height, bytes_per_line, QImage.Format_RGB888)
-        pixmap = QPixmap.fromImage(q_img)
-        self.cropResult.setPixmap(pixmap)
+    #     ax.set_xlabel("RGB values")
+    #     ax.set_ylabel("Pixel Frequency")
+    #     ax.set_title("RGB values")
 
-        self.crop_image()
+    #     # Create a FigureCanvasQTAgg widget to display the Matplotlib plot
+    #     canvas = FigureCanvas(fig)
 
-    def getHist(self,image):
-        non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
+    #     return canvas
 
-        color = ['b','g','r']
-        # for channel, col in enumerate(color):
-        #     histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0,256])
-        #     plt.plot(histogram, color=col)
-        #     plt.xlim(0,256)
+    # def crop_trackbar(self, height, width, x, y, radius, img):
+    #     # Implement your crop logic here
+    #     # This is just a placeholder
 
-        # plt.xlabel("RGB values")
-        # plt.ylabel("Pixel Frequency")
-        # plt.title("RGB values")
-        # plt.show()
+    #     x_value = self.xValue.value()
+    #     y_value = self.yValue.value()
+    #     radius_value = self.radValue.value()
 
-          # Create a Matplotlib figure and axes
-        fig, ax = plt.subplots()
+    #     # Perform cropping
+    #     cropped_image = self.image_processor.crop_image(x_value, y_value, radius_value)
 
-        for channel, col in enumerate(color):
-            histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0, 256])
-            ax.plot(histogram, color=col)
-            ax.set_xlim(0, 256)
+    #     # Display cropped image on QLabel
+    #     self.display_processed_image(cropped_image)
 
-        ax.set_xlabel("RGB values")
-        ax.set_ylabel("Pixel Frequency")
-        ax.set_title("RGB values")
-
-        # Create a FigureCanvasQTAgg widget to display the Matplotlib plot
-        canvas = FigureCanvas(fig)
-
-        return canvas
-
-    def crop_trackbar(self, height, width, x, y, radius, img):
-        # Implement your crop logic here
-        # This is just a placeholder
-
-        x_value = self.xValue.value()
-        y_value = self.yValue.value()
-        radius_value = self.radValue.value()
-
-        # Perform cropping
-        cropped_image = self.image_processor.crop_image(x_value, y_value, radius_value)
-
-        # Display cropped image on QLabel
-        self.display_processed_image(cropped_image)
-
-        crop_img = np.zeros_like(img)
-        crop_img[y - radius:y + radius, x - radius:x + radius] = img[y - radius:y + radius, x - radius:x + radius]
+    #     crop_img = np.zeros_like(img)
+    #     crop_img[y - radius:y + radius, x - radius:x + radius] = img[y - radius:y + radius, x - radius:x + radius]
         
-        self.getHist(crop_img)
-        return crop_img
+    #     self.getHist(crop_img)
+    #     return crop_img
 
 
     # def update_image(self):
@@ -1150,7 +1255,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             print(f"Image saved as {file_name_with_extension}")
         
             screenshot_pixmap = QPixmap(file_name_with_extension)
-            self.cropShow_2.setPixmap(screenshot_pixmap)
+            # self.cropShow_2.setPixmap(screenshot_pixmap)
 
         message = f"Saved as {file_name}\nDirectory: {os.path.dirname(file_name)}"
         QMessageBox.information(self, "File Saved", message)
