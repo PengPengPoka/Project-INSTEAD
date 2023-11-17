@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>2082</width>
-    <height>1064</height>
+    <height>1044</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -74,7 +74,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
@@ -277,23 +277,8 @@
          <height>22</height>
         </rect>
        </property>
-       <item>
-        <property name="text">
-         <string>Camera 1</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Camera 2</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Camera 3</string>
-        </property>
-       </item>
       </widget>
-      <widget class="QLabel" name="label_22">
+      <widget class="QLabel" name="deviceSelected">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -303,7 +288,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Device:</string>
+        <string>Device: 1</string>
        </property>
       </widget>
      </widget>
@@ -648,7 +633,7 @@
      <widget class="QLabel" name="cropResult">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>470</x>
         <y>50</y>
         <width>640</width>
         <height>480</height>
@@ -682,7 +667,7 @@
      <widget class="QLabel" name="label_20">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>470</x>
         <y>10</y>
         <width>641</width>
         <height>21</height>
@@ -740,7 +725,7 @@
      <widget class="QLabel" name="cropShow_2">
       <property name="geometry">
        <rect>
-        <x>1050</x>
+        <x>1120</x>
         <y>50</y>
         <width>640</width>
         <height>480</height>
@@ -774,7 +759,7 @@
      <widget class="QLabel" name="label_37">
       <property name="geometry">
        <rect>
-        <x>990</x>
+        <x>1050</x>
         <y>540</y>
         <width>121</width>
         <height>18</height>
@@ -793,7 +778,7 @@
      <widget class="MplWidget" name="MplWidget" native="true">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>470</x>
         <y>570</y>
         <width>1291</width>
         <height>411</height>
@@ -803,9 +788,9 @@
      <widget class="QFrame" name="frame_2">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>0</x>
         <y>50</y>
-        <width>381</width>
+        <width>451</width>
         <height>131</height>
        </rect>
       </property>
@@ -821,14 +806,14 @@
       <widget class="QLabel" name="value_x">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>370</x>
          <y>20</y>
          <width>71</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Value: 320</string>
+        <string>X-Axis: 320</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -837,7 +822,7 @@
       <widget class="QScrollBar" name="yValue">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>140</x>
          <y>60</y>
          <width>160</width>
          <height>16</height>
@@ -859,7 +844,7 @@
       <widget class="QScrollBar" name="radValue">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>140</x>
          <y>100</y>
          <width>160</width>
          <height>16</height>
@@ -872,7 +857,7 @@
         <number>480</number>
        </property>
        <property name="sliderPosition">
-        <number>182</number>
+        <number>240</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -881,14 +866,14 @@
       <widget class="QLabel" name="value_y">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>370</x>
          <y>60</y>
          <width>71</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Value: 240</string>
+        <string>Y-Axis : 240</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -897,7 +882,7 @@
       <widget class="QLabel" name="label_31">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>11</x>
          <y>100</y>
          <width>101</width>
          <height>20</height>
@@ -906,31 +891,37 @@
        <property name="text">
         <string>Radius (pixel)</string>
        </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="label_27">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>11</x>
          <y>20</y>
-         <width>52</width>
-         <height>15</height>
+         <width>121</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>X-axis:</string>
+        <string>Coordinate X-Value:</string>
        </property>
       </widget>
       <widget class="QLabel" name="value_rad">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>370</x>
          <y>100</y>
          <width>71</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Value: 182</string>
+        <string>Radius: 240</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -939,7 +930,7 @@
       <widget class="QScrollBar" name="xValue">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>140</x>
          <y>20</y>
          <width>160</width>
          <height>16</height>
@@ -961,21 +952,90 @@
       <widget class="QLabel" name="label_30">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>11</x>
          <y>60</y>
-         <width>52</width>
+         <width>121</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Y-axis:</string>
+        <string>Coordinate Y-Value:</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="x_spin">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>20</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>640</number>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::DefaultStepType</enum>
+       </property>
+       <property name="value">
+        <number>320</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="y_spin">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>60</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>480</number>
+       </property>
+       <property name="value">
+        <number>240</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="rad_spin">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>100</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::UpDownArrows</enum>
+       </property>
+       <property name="accelerated">
+        <bool>false</bool>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>480</number>
+       </property>
+       <property name="value">
+        <number>240</number>
        </property>
       </widget>
      </widget>
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
-        <x>1050</x>
+        <x>1120</x>
         <y>10</y>
         <width>641</width>
         <height>21</height>
@@ -990,6 +1050,17 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>340</y>
+        <width>160</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
