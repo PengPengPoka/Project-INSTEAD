@@ -4,33 +4,203 @@ import cv2 as cv
 import datetime
 import csv, re
 import os
+import sys
 import serial
 import numpy as np
 import subprocess
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer, QTime,QThread, pyqtSignal,QMutex, QMutexLocker
-from PyQt5.QtCore import QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtCore import QTimer, QTime,QThread, pyqtSignal,QMutex, QMutexLocker,QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
 from PyQt5.QtGui import QImage, QPixmap,QTextCursor
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy,QPushButton
-from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox, QSlider,QFrame
-from PyQt5.QtWidgets import QLabel, QVBoxLayout
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QLabel, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy,QPushButton,QDialog, QPushButton, QMessageBox, QSlider,QFrame,QSplitter, QLabel, QVBoxLayout,QWidget, QPushButton, QLabel
+# from PyQt5.QtWidgets import VBoxLayout
 from PyQt5 import QtCore,QtWidgets,uic
 from matplotlib import pyplot as plt
 from io import StringIO
 from tqdm import tqdm
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.lines import Line2D
+
 
 from matplotlib.figure import Figure
-
 from Camera import Camera
 
-sampling_active = False
+class AromaPlot(QWidget):
+    def __init__(self):
+        super(AromaPlot, self).__init__()
+
+        self.figure = Figure()
+        self.ax_combined = self.figure.add_subplot(111)
+        # self.ax_individual = [self.figure.add_subplot(3, 2, i + 1) for i in range(6)]
+
+        self.button_choose_file = QPushButton("Choose CSV File")
+        self.button_choose_file.clicked.connect(self.load_sensor_data)
+
+        # layout = QVBoxLayout()
+        # toolbar = NavigationToolbar(self.figure.canvas, self.figure.canvas)
+        # toolbar.addAction('save', self.save_plot)
+        # layout.addWidget(toolbar)
+        # layout.addWidget(self.button_choose_file)
+        # layout.addWidget(FigureCanvas(self.figure))
+        layout = QVBoxLayout()
+        
+        self.canvas = FigureCanvas(self.figure)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        
+        toolbar = NavigationToolbar(self.figure.canvas, self)
+        # toolbar.addAction('save', self.save_plot)
+        layout.addWidget(toolbar)
+        layout.addWidget(self.button_choose_file)
+        layout.addWidget(FigureCanvas(self.figure))
+
+
+        layoudAgain=QVBoxLayout()
+
+        # self.addToolBar(NavigationToolbar(self.figure.canvas, self))
+
+
+        self.setLayout(layout)
+
+        # self.DataThread = DataSamplingThread()
+        self.line_realtime, = self.ax_combined.plot([], [], label="Real-Time Data")
+
+        self.sensor_data = None
+        self.open_csv = False
+        self.time_increment = 0.3# Default time increment (1 second)
+        self.update_plots()
+
+    def load_sensor_data(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        csv_name, _ = QFileDialog.getOpenFileName(
+            self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options
+        )
+
+        if csv_name:
+            self.open_csv = not self.open_csv
+            self.sensor_data = self.read_csv(csv_name)
+            self.update_plots()
+
+    def auto_load_csv(self,csv_filename):
+        if self.open_csv == True:
+            reply = QMessageBox.question(self, 'Confirmation', 'Are you sure you want to overwrite?',
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                print('Overwriting...')
+                self.sensor_data = self.read_csv(csv_filename)  
+                self.update_plots()
+
+            else:
+                print('Cancelled overwrite')
+                return
+        else:
+            self.sensor_data=self.read_csv(self.csvname)
+            self.update_plots()
+
+    # def save_plot(self):
+    #     options = QFileDialog.Options()
+    #     options |= QFileDialog.DontUseNativeDialog
+    #     file_name, _ = QFileDialog.getSaveFileName(
+    #         self, "Save Plot", "", "PNG Files (*.png);;All Files (*)", options=options
+    #     )
+
+    #     if file_name:
+    #         self.figure.savefig(file_name)
+
+    def read_csv(self, csv_name):
+        with open(csv_name, "r") as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip header row
+            sensor_data = list(reader)
+
+        return np.array(sensor_data, dtype=float)
+
+    def update_plots(self):
+        if self.sensor_data is not None:
+            num_rows, num_columns = self.sensor_data.shape
+
+            time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
+
+            # Plot combined data
+            self.ax_combined.clear()
+            for i in range(num_columns):
+                self.ax_combined.plot(time_column, self.sensor_data[:, i], label=f"Sensor {i + 1}")
+            self.ax_combined.set_xlabel("Time (s)")
+            self.ax_combined.set_ylabel("Sensor Values")
+            self.ax_combined.legend()
+
+            # Plot individual data
+            # for i in range(num_columns):
+            #     self.ax_individual[i].clear()
+            #     self.ax_individual[i].plot(time_column, self.sensor_data[:, i], label=f"Sensor {i + 1}")
+            #     self.ax_individual[i].set_xlabel("Time (s)")
+            #     self.ax_individual[i].set_ylabel("Sensor Values")
+            #     self.ax_individual[i].legend()
+
+            self.figure.tight_layout()
+            self.figure.canvas.draw()
+    
+    @Slot(np.ndarray)
+    def update_realtime_slot(self, data):
+        self.update_realtime(data)
+            
+    def update_realtime(self, data):
+        if data.size > 0:
+            num_rows, num_columns = data.shape
+            time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
+
+            # Update Line2D data
+            self.line_realtime.set_data(time_column, data)
+
+            # Adjust axis limits if needed
+            self.ax_combined.relim()
+            self.ax_combined.autoscale_view()
+
+            # Redraw the figure
+            self.figure.tight_layout()
+            self.figure.canvas.draw()
+        
+    # def update_realtime(self,data):
+    #     if data.size > 0:
+    #         # num_columns=data.size
+    #         num_rows, num_columns = data.shape
+    #         time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
+
+    #         self.ax_combined.clear()
+    #         for i in range(num_columns):
+    #             self.ax_combined.plot(time_column, data, label="Real-Time Data")
+    #         self.ax_combined.set_xlabel("Time (s)")
+    #         self.ax_combined.set_ylabel("Sensor Values")
+    #         self.ax_combined.legend()
+
+    #         self.figure.tight_layout()
+    #         self.figure.canvas.draw()
+
+    # def update_realtime(self, data):
+    #     if data.size > 0:
+    #         num_rows, num_columns = data.shape
+    #         time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
+
+    #         self.ax_combined.clear()  # Clear the axes only once
+    #         for i in range(num_columns):
+    #             self.ax_combined.plot(time_column, data[:, i], label=f"Real-Time Data {i + 1}")
+
+    #         self.ax_combined.set_xlabel("Time (s)")
+    #         self.ax_combined.set_ylabel("Sensor Values")
+    #         self.ax_combined.legend()
+
+    #         self.figure.tight_layout()
+    #         self.figure.canvas.draw()
+
+
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
+    data_signal = QtCore.pyqtSignal(np.ndarray)
     repetition_signal = QtCore.pyqtSignal(int)
+    filename_signal = QtCore.pyqtSignal(str)
 
     def __init__(self, delay, amount,repetition,csv_name):
         super().__init__()
@@ -47,7 +217,6 @@ class DataSamplingThread(QtCore.QThread):
             ports = list(serial.tools.list_ports.comports())
             for port in ports:
                 try:
-                    # self.update_signal.emit('Found port ' + port.device, port.serial_number)
                     self.update_signal.emit('Found port ' + port.device + ' ' + port.serial_number) 
                     ser = serial.Serial(port.device, 115200, timeout=1)
                     ser.flush()
@@ -60,7 +229,7 @@ class DataSamplingThread(QtCore.QThread):
                         self.update_signal.emit("Wrong COM port")
                         raise Exception("Wrong COM port")
                     split_values_test = serial_data_test.split("#")
-                    int_values_test = [int(value) for value in split_values_test]
+                    int_values_test = [int(value) for value in split_values_test]                    
                     if len(int_values_test) < 6:
                         self.update_signal.emit("Wrong COM port")
                         raise Exception("Wrong COM port")
@@ -68,15 +237,14 @@ class DataSamplingThread(QtCore.QThread):
                 except:
                     self.update_signal.emit("error")
                     ser.close()
-                    continue
                 
                 self.repetition_signal.emit(i+1)
                 data_to_send = f"{self.delay}#{self.amount}\n"
                 ser.write(data_to_send.encode())
                 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-                # csv_filename = os.path.join(default_folder, f"sensor_data_{timestamp}_{self.csv}_-{self.repetition+1}.csv")
                 csv_filename = os.path.join(default_folder, f"sensor_data_{timestamp}_{self.csv_name}_{i+1}.csv")
-                # self.repetition_times.display(self.repetition)
+                self.filename_signal.emit(csv_filename)
+                self.csvname= csv_filename
 
                 with open(csv_filename, mode='w', newline='') as csv_file:
                     csv_writer = csv.writer(csv_file)
@@ -89,11 +257,28 @@ class DataSamplingThread(QtCore.QThread):
                         split_values = serial_data.split("#")
                         if len(split_values) != 6:
                             self.update_signal.emit(f"Received incomplete data: {split_values}")
+                            # self.data_signal.emit(np.ndarray([], dtype=float))
+
                             continue
                         int_values = [int(value) for value in split_values]
-                      
+
                         self.update_signal.emit(f'{j+1} {int_values}\n')
                         csv_writer.writerow(int_values)
+                        # self.data_signal.emit(np.array(int_values))
+                        self.data_signal.emit(np.array(int_values))
+
+                    # for j in tqdm(range(self.amount), desc=f'Progress ({ser.name}) Data ({i})', leave=False):
+                    #     serial_data = ser.readline().decode('ascii')
+                    #     split_values = serial_data.split("#")
+                    #     if len(split_values) != 6:
+                    #         self.update_signal.emit(f"Received incomplete data: {split_values}")
+                    #         self.data_signal.emit(np.ndarray([], dtype=float))
+                    #         continue
+                    #     int_values = [int(value) for value in split_values]
+
+                    #     self.update_signal.emit(f'{j+1} {int_values}\n')
+                    #     csv_writer.writerow(int_values)
+
                     
 
                     ser.close()
@@ -376,6 +561,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.sample_name = ""
         self.last_name=""
         self.file_name = ""
+        self.open_csv = False
 
         self.shot_count = 1
 
@@ -388,6 +574,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.x = 0
         self.y = 0
         self.radius = 0
+
+        # self.DataThread = DataSamplingThread()
+
+        self.aroma_widget =AromaPlot()
+        self.tabWidget.addTab(self.aroma_widget, "Aroma Analysis")
+
+        splitter = QSplitter(self)
+        splitter.addWidget(self.tabWidget)  
+
+        self.setCentralWidget(splitter)
         
         # self.ImageCheck()
 
@@ -489,10 +685,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.radValue.valueChanged.connect(lambda value: self.rad_spin.setValue(value))
         self.x_spin.valueChanged.connect(lambda value: self.xValue.setValue(value))
         self.y_spin.valueChanged.connect(lambda value: self.yValue.setValue(value))
+        self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
+
 
         self.openImage.clicked.connect(self.manual_load_image)
         self.clearCropped_2.clicked.connect(self.clearCrop)
-        self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
+        # self.addToolBar(NavigationToolbar(any, self))
+        
+
         
 
         self.clearCrop()
@@ -511,22 +711,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
 
         
-        # self.find_port()
-
     def updateXValue(self, value):
-        # self.x_spin.setValue(self.xValue.value())
-        # self.xValue.setValue(self.x_spin.value())
         self.value_x.setText(f'X-Axis: {value}')
 
     def updateYValue(self, value):
-        # self.y_spin.setValue(self.yValue.value())
-        # self.yValue.setValue(self.y_spin.value())
         self.value_y.setText(f'Y-Axis: {value}')
       
     
     def updateradValue(self, value):
-        # self.rad_spin.setValue(self.radValue.value())       
-        # self.radValue.setValue(self.rad_spin.value())
         self.value_rad.setText(f'Radius: {value}')
     
 
@@ -614,13 +806,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             pixmap = QPixmap.fromImage(q_img)
             self.cropResult.setPixmap(pixmap)
 
+
     def update_gui(self,data):
         self.text_edit.append(data)
 
     def start_sampling(self):
             self.log_display.clear()
-            # delay = 60
-            # amount = 211
 
             delay_text = self.delay_input.text()
             amount_text = self.amount_input.text()
@@ -644,12 +835,24 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             if not csv_name:
                 return
 
-
+            aroma_plot = AromaPlot()
             self.thread = DataSamplingThread(delay, amount,repetition,csv_name)
+
+            # aroma_plot.moveToThread(self.thread)
+            # self.thread.data_signal.connect(aroma_plot.update_realtime(self,data=np.array(self)))
+            # self.thread.data_signal.connect(aroma_plot.update_realtime)
+            # self.thread.data_signal.connect(self.update_plot_with_data)
+            self.thread.data_signal.connect(aroma_plot.update_realtime_slot)
+
+
             self.thread.repetition_signal.connect(self.update_repetition_lcd)
             self.thread.update_signal.connect(self.update_text_edit)
             self.thread.finished.connect(self.thread_finished)
+        
             self.thread.start()
+
+    def update_plot_with_data(self, data):
+        self.aroma_plot.update_realtime(data)
   
     def update_repetition_lcd(self, repetition_number):
         # Slot to update the LCD number display with the repetition number
@@ -662,6 +865,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         QMessageBox.information(self, "Data collection","complete")
         self.log_display.append("Data collection completed.")
+        # self.DataThread.filename_signal.connect(self.aroma_widget.auto_load_csv)
+        self.aroma_widget.auto_load_csv()
+        # self.file_name_signal.connect()    
 
     def openFolder(self):
         default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
@@ -896,10 +1102,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             QMessageBox.information(self, "File Saved", message)        
 
     def changeCameraIndex(self, index):
-        # self.deviceSelected.setText("Device: "index)
+        # if self.changeCameraIndex(index) == 0:
+        #     self.changeCameraIndex(1)
+        
         self.video_capture.release()
-        self.video_capture = cv.VideoCapture(index)
         self.deviceSelected.setText(f'Device: {index+1}')
+        if index == 0:
+            index =1
+        self.video_capture = cv.VideoCapture(index)
     
 
     def setPreferredExtension(self, extension):
