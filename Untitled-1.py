@@ -9,8 +9,8 @@ import serial
 import numpy as np
 import subprocess
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer, QTime,QThread, pyqtSignal,QMutex, QMutexLocker,QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
-from PyQt5.QtGui import QImage, QPixmap,QTextCursor
+from PyQt5.QtCore import QTimer, Qt, QTime,QThread,QDateTime, pyqtSignal,QMutex, QMutexLocker,QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtGui import QImage, QPixmap,QTextCursor, QColor
 from PyQt5.QtWidgets import QLabel, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy,QPushButton,QDialog, QPushButton, QMessageBox, QSlider,QFrame,QSplitter, QLabel, QVBoxLayout,QWidget, QPushButton, QLabel
 # from PyQt5.QtWidgets import VBoxLayout
 from PyQt5 import QtCore,QtWidgets,uic
@@ -20,10 +20,69 @@ from tqdm import tqdm
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.lines import Line2D
-
+import matplotlib.pyplot as plt
+from collections import deque
+import numpy as np
+import threading
+import time
+import pandas as pd
 
 from matplotlib.figure import Figure
 from Camera import Camera
+
+class RealTimePlot:
+    def __init__(self, num_sensors=6, plot_interval=1):
+        self.num_sensors = num_sensors
+        self.plot_interval = plot_interval
+
+        # Initialize sensor data container
+        self.sensor_data = [deque(maxlen=50) for _ in range(num_sensors)]
+        self.time_data = deque(maxlen=50)
+        
+        # Create initial plot
+        self.create_plot()
+
+        # Start a separate thread for real-time plotting
+        self.plot_thread = threading.Thread(target=self.real_time_plot)
+        self.plot_thread.daemon = True
+        self.plot_thread.start()
+
+    def get_sensor_reading(self):
+        # Replace this function with your actual method to get sensor readings
+        return [np.random.rand() for _ in range(self.num_sensors)]
+
+    def create_plot(self):
+        plt.ion()  # Turn on interactive mode for real-time plotting
+        self.fig, self.ax = plt.subplots()
+        self.lines = [self.ax.plot([], label=f"Sensor {i + 1}")[0] for i in range(self.num_sensors)]
+        self.ax.legend()
+        self.ax.set_xlabel('Time')
+        self.ax.set_ylabel('Sensor Reading')
+
+    def real_time_plot(self):
+        while True:
+            sensor_readings = self.get_sensor_reading()
+
+            # Update sensor_data container
+            for i in range(self.num_sensors):
+                self.sensor_data[i].append(sensor_readings[i])
+
+            # Update time_data container
+            self.time_data.append(time.time())
+
+            # Update the plot
+            self.update_plot()
+
+            time.sleep(self.plot_interval)
+
+    def update_plot(self):
+        for i in range(self.num_sensors):
+            self.lines[i].set_xdata(np.array(self.time_data))
+            self.lines[i].set_ydata(np.array(self.sensor_data[i]))
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.flush_events()
 
 class AromaPlot(QWidget):
     def __init__(self):
@@ -34,7 +93,13 @@ class AromaPlot(QWidget):
         # self.ax_individual = [self.figure.add_subplot(3, 2, i + 1) for i in range(6)]
 
         self.button_choose_file = QPushButton("Choose CSV File")
+        
+        # self.button_choose_file.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.button_choose_file.setFixedSize(200, 40)  
+
         self.button_choose_file.clicked.connect(self.load_sensor_data)
+        self.button_choose_file.setStyleSheet("background-color: #007BFF; color: white; border: none; padding: 10px;")
+
 
         # layout = QVBoxLayout()
         # toolbar = NavigationToolbar(self.figure.canvas, self.figure.canvas)
@@ -49,15 +114,13 @@ class AromaPlot(QWidget):
 
         
         toolbar = NavigationToolbar(self.figure.canvas, self)
-        # toolbar.addAction('save', self.save_plot)
+
+        button_layout = QVBoxLayout()
+        button_layout.addWidget(self.button_choose_file, alignment=Qt.AlignCenter)
+
         layout.addWidget(toolbar)
-        layout.addWidget(self.button_choose_file)
-        layout.addWidget(FigureCanvas(self.figure))
-
-
-        layoudAgain=QVBoxLayout()
-
-        # self.addToolBar(NavigationToolbar(self.figure.canvas, self))
+        layout.addLayout(button_layout)
+        layout.addWidget(self.canvas)
 
 
         self.setLayout(layout)
@@ -123,10 +186,27 @@ class AromaPlot(QWidget):
 
             time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
 
+            sensor_labels = {
+            1: "MQ 7",
+            2: "MQ 9",
+            3: "TGS 822",
+            4: "TGS 2600",
+            5: "TGS 2602",
+            6: "TGS 2611"
+        }
+
+
             # Plot combined data
             self.ax_combined.clear()
+            
+            # for i in range(num_columns):
+            #     self.ax_combined.plot(time_column, self.sensor_data[:, i], label=f"Sensor {i + 1}")
+            
             for i in range(num_columns):
-                self.ax_combined.plot(time_column, self.sensor_data[:, i], label=f"Sensor {i + 1}")
+                sensor_label = sensor_labels.get(i + 1, f"Sensor {i + 1}")
+                self.ax_combined.plot(time_column, self.sensor_data[:, i], label=sensor_label)
+
+
             self.ax_combined.set_xlabel("Time (s)")
             self.ax_combined.set_ylabel("Sensor Values")
             self.ax_combined.legend()
@@ -193,8 +273,6 @@ class AromaPlot(QWidget):
 
     #         self.figure.tight_layout()
     #         self.figure.canvas.draw()
-
-
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -266,20 +344,6 @@ class DataSamplingThread(QtCore.QThread):
                         csv_writer.writerow(int_values)
                         # self.data_signal.emit(np.array(int_values))
                         self.data_signal.emit(np.array(int_values))
-
-                    # for j in tqdm(range(self.amount), desc=f'Progress ({ser.name}) Data ({i})', leave=False):
-                    #     serial_data = ser.readline().decode('ascii')
-                    #     split_values = serial_data.split("#")
-                    #     if len(split_values) != 6:
-                    #         self.update_signal.emit(f"Received incomplete data: {split_values}")
-                    #         self.data_signal.emit(np.ndarray([], dtype=float))
-                    #         continue
-                    #     int_values = [int(value) for value in split_values]
-
-                    #     self.update_signal.emit(f'{j+1} {int_values}\n')
-                    #     csv_writer.writerow(int_values)
-
-                    
 
                     ser.close()
                     break
@@ -623,7 +687,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
         self.open_folder_2.clicked.connect(self.openFolder)
-        self.Folder.clicked.connect(self.openFolder)
+        self.pixelData.clicked.connect(self.getHist)
 
         self.log_display.setReadOnly(True)
         sys.stdout = TextStream(self.log_display)
@@ -689,7 +753,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
 
         self.openImage.clicked.connect(self.manual_load_image)
-        self.clearCropped_2.clicked.connect(self.clearCrop)
+        # self.clearCropped_2.clicked.connect(self.clearCrop)
+        self.saveResult.clicked.connect(self.saveImage)
         # self.addToolBar(NavigationToolbar(any, self))
         
 
@@ -700,6 +765,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.image_original = None
         self.image_cropped = None
+        
 
 
 
@@ -753,15 +819,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         ax.clear()
         non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
 
-        color = ['b', 'g', 'r']
+        color = ['blue', 'green', 'red']
         for channel, col in enumerate(color):
             histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0, 256])
-            ax.plot(histogram, color=col)
+            # ax.plot(histogram, color=col)
+            # ax.plot(histogram, color=col, label=f"Channel {channel + 1}")
+            ax.plot(histogram, color=col, label=f"{col.lower()} channel")
+
+
             ax.set_xlim(0, 256)
 
         ax.set_xlabel("RGB values")
         ax.set_ylabel("Pixel Frequency")
         ax.set_title("RGB values")
+        ax.legend()
+
+
     
     def auto_load_image(self):
         if self.image_source:
@@ -794,10 +867,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     
     def display_images(self):
         if self.image_cropped is not None:
+            # height, width, channel = self.image_cropped.shape
+            # bytes_per_line = 3 * width
+            # # q_image_cropped = QPixmap.fromImage(QImage(self.image_cropped.data, width, height, bytes_per_line, QImage.Format_RGB888))
+            # q_image_cropped = QImage(self.image_cropped.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            # # self.q_image_cropped = q_image_cropped
+            # self.q_image_cropped = QPixmap.fromImage(q_image_cropped)
+            # # self.cropShow_2.setPixmap(q_image_cropped)
+            # processed_pixmap = self.alphaImage(self.q_image_cropped)
+            # self.cropShow_2.setPixmap(processed_pixmap)
+            # self.alphaImage=processed_pixmap
+
             height, width, channel = self.image_cropped.shape
             bytes_per_line = 3 * width
-            q_image_cropped = QPixmap.fromImage(QImage(self.image_cropped.data, width, height, bytes_per_line, QImage.Format_RGB888))
-            self.cropShow_2.setPixmap(q_image_cropped)
+            q_image_cropped = QImage(self.image_cropped.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            self.q_image_cropped = QPixmap.fromImage(q_image_cropped)
+            processed_pixmap = self.alphaImage(self.q_image_cropped)
+            self.cropShow_2.setPixmap(processed_pixmap)
+            self.processedImage = processed_pixmap  # Store the processed image
+
         
         if self.image_circle is not None:
             height, width, channel = self.image_circle.shape
@@ -806,6 +894,35 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             pixmap = QPixmap.fromImage(q_img)
             self.cropResult.setPixmap(pixmap)
 
+    def alphaImage(self, q_image_cropped):
+        q_image_alpha = QImage(q_image_cropped.size(), QImage.Format_ARGB32)
+        q_image_alpha.fill(QColor(0, 0, 0, 0))
+
+        q_img_cropped = q_image_cropped.toImage()
+
+        for i in range(q_img_cropped.height()):
+            for j in range(q_img_cropped.width()):
+                color = QColor(q_img_cropped.pixel(j, i))
+                if color.black() == 0:
+                    q_image_alpha.setPixelColor(j, i, QColor(0, 0, 0, 0))
+                else:
+                    q_image_alpha.setPixelColor(j, i, color)
+
+        q_pixmap_alpha = QPixmap.fromImage(q_image_alpha)
+        return q_pixmap_alpha
+    
+    def saveImage(self):
+        self.default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
+        default_save_location = os.path.join(self.default_folder, self.getDefaultSaveName())
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Image", default_save_location, "Images (*.png *.jpg *.bmp *.jpeg)")
+
+        if file_path:
+            pixmap = self.processedImage  
+            pixmap.save(file_path)
+
+    def getDefaultSaveName(self):
+        timestamp = QDateTime.currentDateTime().toString("yyyyMMddhhmmss")
+        return f"{timestamp}_image_altered"
 
     def update_gui(self,data):
         self.text_edit.append(data)
@@ -986,7 +1103,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             self.timer.start(30)
         self.playback = not self.playback
-        
+
+   
 
     def save_filename(self):
         # self.sample_name = self.fileName.text()
@@ -1017,8 +1135,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             # self.image_processor.image_processed.connect(self.update_image)
             # self.image_processor.start()
             directory_path = os.path.dirname(file_name)
-
-
         
     def clean_filename(self, name):
         name = re.sub(r'[\\/:"*?<>|]', '_', name)

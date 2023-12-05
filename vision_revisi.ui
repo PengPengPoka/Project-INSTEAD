@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1341</width>
-    <height>1009</height>
+    <width>1192</width>
+    <height>992</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -35,7 +35,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../../.designer/backup/logo.png</normaloff>../../../../.designer/backup/logo.png</iconset>
+    <normaloff>../../../../../.designer/backup/logo.png</normaloff>../../../../../.designer/backup/logo.png</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
@@ -44,13 +44,37 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_7">
-    <item row="0" column="0">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>1920</width>
+     <height>1200</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_18">
+    <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
-        <width>16777215</width>
-        <height>16777215</height>
+        <width>1920</width>
+        <height>1200</height>
        </size>
       </property>
       <property name="currentIndex">
@@ -60,17 +84,23 @@
        <enum>Qt::ElideNone</enum>
       </property>
       <widget class="QWidget" name="tab">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
-         <height>16777215</height>
+         <width>1920</width>
+         <height>1200</height>
         </size>
        </property>
        <attribute name="title">
         <string>Vision Sensor</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0" rowspan="2">
+        <item row="0" column="0" rowspan="3">
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <property name="leftMargin">
            <number>0</number>
@@ -114,6 +144,12 @@
           </item>
           <item>
            <widget class="QFrame" name="frame">
+            <property name="minimumSize">
+             <size>
+              <width>640</width>
+              <height>640</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>640</width>
@@ -139,326 +175,370 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="1">
-         <widget class="QFrame" name="frame_7">
-          <property name="maximumSize">
-           <size>
-            <width>251</width>
-            <height>250</height>
-           </size>
-          </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <property name="lineWidth">
-           <number>4</number>
-          </property>
-          <widget class="QWidget" name="">
-           <property name="geometry">
-            <rect>
-             <x>19</x>
-             <y>19</y>
-             <width>221</width>
-             <height>221</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_15">
-            <item>
-             <widget class="QLabel" name="label_13">
-              <property name="maximumSize">
-               <size>
-                <width>200</width>
-                <height>15</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Vision Device</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_19">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>10</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="deviceSelected">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>60</width>
-                  <height>25</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Device: 1</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="cameraSelect">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>120</width>
-                  <height>25</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>25</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_15">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <widget class="QWidget" name="">
-               <property name="geometry">
-                <rect>
-                 <x>100</x>
-                 <y>-10</y>
-                 <width>99</width>
-                 <height>103</height>
-                </rect>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_11">
-                <property name="spacing">
-                 <number>10</number>
-                </property>
-                <item>
-                 <widget class="QPushButton" name="camConfig">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>121</width>
-                    <height>35</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Configuration</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="startButton_2">
-                  <property name="maximumSize">
-                   <size>
-                    <width>120</width>
-                    <height>35</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Start</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="startButton">
-                  <property name="maximumSize">
-                   <size>
-                    <width>120</width>
-                    <height>35</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Freeze</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QFrame" name="frame_3">
-          <property name="maximumSize">
-           <size>
-            <width>270</width>
-            <height>300</height>
-           </size>
-          </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <property name="lineWidth">
-           <number>4</number>
-          </property>
-          <widget class="QLabel" name="label_12">
-           <property name="geometry">
-            <rect>
-             <x>40</x>
-             <y>20</y>
-             <width>171</width>
-             <height>16</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Object Filename</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-          <widget class="QFrame" name="frame_10">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>50</y>
-             <width>221</width>
-             <height>80</height>
-            </rect>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <widget class="QWidget" name="layoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>0</y>
-              <width>211</width>
-              <height>50</height>
-             </rect>
+        <item row="0" column="1" rowspan="3">
+         <layout class="QVBoxLayout" name="verticalLayout_22">
+          <item>
+           <widget class="QFrame" name="frame_7">
+            <property name="maximumSize">
+             <size>
+              <width>251</width>
+              <height>250</height>
+             </size>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Filename </string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="fileName">
-               <property name="text">
-                <string>ObjectType_Series</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-          <widget class="QFrame" name="frame_11">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>100</y>
-             <width>241</width>
-             <height>141</height>
-            </rect>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <widget class="QFrame" name="frame_14">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>30</y>
-              <width>211</width>
-              <height>101</height>
-             </rect>
+            <property name="autoFillBackground">
+             <bool>true</bool>
             </property>
             <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
+             <enum>QFrame::Box</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QWidget" name="layoutWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>201</width>
-               <height>91</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_9">
-              <item row="0" column="0">
-               <widget class="QPushButton" name="snapButton">
-                <property name="maximumSize">
-                 <size>
-                  <width>120</width>
-                  <height>35</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Take Picture</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="open_folder_2">
-                <property name="maximumSize">
-                 <size>
-                  <width>250</width>
-                  <height>80</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Open Data Folder</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
+            <property name="lineWidth">
+             <number>4</number>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_21">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_15">
+               <item>
+                <widget class="QLabel" name="label_13">
+                 <property name="maximumSize">
+                  <size>
+                   <width>200</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Vision Device</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="frame_15">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>220</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>1920</width>
+                   <height>1200</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <widget class="QWidget" name="layoutWidget">
+                  <property name="geometry">
+                   <rect>
+                    <x>70</x>
+                    <y>60</y>
+                    <width>131</width>
+                    <height>103</height>
+                   </rect>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_11">
+                   <property name="spacing">
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="camConfig">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>121</width>
+                       <height>35</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Configuration</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="startButton_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>120</width>
+                       <height>35</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Start</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="startButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>120</width>
+                       <height>35</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Freeze</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="">
+                  <property name="geometry">
+                   <rect>
+                    <x>20</x>
+                    <y>10</y>
+                    <width>181</width>
+                    <height>41</height>
+                   </rect>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_19">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="deviceSelected">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>60</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Device: 1</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="cameraSelect">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>120</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>80</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </widget>
-         </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>260</width>
+              <height>280</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>1920</width>
+              <height>1200</height>
+             </size>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <property name="lineWidth">
+             <number>4</number>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_19" stretch="0">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinAndMaxSize</enum>
+             </property>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QFrame" name="frame_10">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>220</width>
+                   <height>220</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_13">
+                  <item>
+                   <widget class="QLabel" name="label_12">
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Object Filename</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_17">
+                    <item>
+                     <widget class="QLabel" name="label_5">
+                      <property name="maximumSize">
+                       <size>
+                        <width>200</width>
+                        <height>10</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Filename </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="fileName">
+                      <property name="maximumSize">
+                       <size>
+                        <width>300</width>
+                        <height>28</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>ObjectType_Series</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_9">
+                    <item row="1" column="0">
+                     <widget class="QPushButton" name="open_folder_2">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>250</width>
+                        <height>60</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Open Data Folder</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QPushButton" name="snapButton">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>120</width>
+                        <height>35</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Take Picture</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -579,8 +659,11 @@
           <property name="maximumSize">
            <size>
             <width>430</width>
-            <height>680</height>
+            <height>500</height>
            </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="frameShape">
            <enum>QFrame::Box</enum>
@@ -592,7 +675,7 @@
            <number>4</number>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QFrame" name="frame_13">
              <property name="maximumSize">
               <size>
@@ -664,7 +747,96 @@
              </layout>
             </widget>
            </item>
-           <item row="1" column="0" alignment="Qt::AlignHCenter">
+           <item row="4" column="0">
+            <layout class="QGridLayout" name="gridLayout_10" rowminimumheight="40,1,1">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="startSampling">
+               <property name="maximumSize">
+                <size>
+                 <width>140</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Start</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QPushButton" name="refreshScreen">
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Clear </string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QPushButton" name="open_folder">
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Open Data Folder</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Filename: </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="fileName_csv">
+               <property name="maximumSize">
+                <size>
+                 <width>300</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Object_Type_Series</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="0" alignment="Qt::AlignHCenter">
+            <widget class="QLabel" name="label_28">
+             <property name="maximumSize">
+              <size>
+               <width>160</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Aroma Data sampling:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QFrame" name="frame_8">
              <property name="maximumSize">
               <size>
@@ -748,98 +920,6 @@
              </layout>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QFrame" name="frame_12">
-             <property name="maximumSize">
-              <size>
-               <width>320</width>
-               <height>70</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
-                <item>
-                 <widget class="QLabel" name="label_6">
-                  <property name="maximumSize">
-                   <size>
-                    <width>100</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Filename: </string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="fileName_csv">
-                  <property name="text">
-                   <string>Object_Type_Series</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="0" column="0">
-              <widget class="QPushButton" name="startSampling">
-               <property name="maximumSize">
-                <size>
-                 <width>140</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Start</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QPushButton" name="refreshScreen">
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Clear </string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QPushButton" name="open_folder">
-               <property name="text">
-                <string>Open Data Folder</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="0" alignment="Qt::AlignHCenter">
-            <widget class="QLabel" name="label_28">
-             <property name="maximumSize">
-              <size>
-               <width>160</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Aroma Data sampling:</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -850,10 +930,138 @@
         <string>Vision Analysis</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_12">
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="label_20">
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="text">
+               <string>Image Crop</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="cropResult">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>320</width>
+                <height>320</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>640</width>
+                <height>640</height>
+               </size>
+              </property>
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <property name="lineWidth">
+               <number>3</number>
+              </property>
+              <property name="text">
+               <string>Image</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_21">
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
+                <property name="text">
+                 <string>Image Result</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="cropShow_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>320</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>640</width>
+                  <height>640</height>
+                 </size>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>true</bool>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>3</number>
+                </property>
+                <property name="text">
+                 <string>Image</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QFrame" name="frame_2">
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
+              <height>200</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Box</enum>
             </property>
@@ -1045,27 +1253,18 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::MinimumExpanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>428</width>
-              <height>10</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QPushButton" name="openImage">
               <property name="text">
                <string>Open</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveResult">
+              <property name="text">
+               <string>Save Masked Image</string>
               </property>
              </widget>
             </item>
@@ -1079,153 +1278,9 @@
             <item>
              <widget class="QPushButton" name="Folder">
               <property name="text">
-               <string>Open File Folder</string>
+               <string>Save Pixel Data</string>
               </property>
              </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="clearCropped_2">
-              <property name="text">
-               <string>clear</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
-              </property>
-              <property name="text">
-               <string>Image Crop</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>4</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="cropResult">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="autoFillBackground">
-               <bool>true</bool>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <property name="lineWidth">
-               <number>3</number>
-              </property>
-              <property name="text">
-               <string>Image</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>548</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QLabel" name="label_21">
-                <property name="frameShape">
-                 <enum>QFrame::Box</enum>
-                </property>
-                <property name="text">
-                 <string>Image Result</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>4</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QLabel" name="cropShow_2">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="autoFillBackground">
-                 <bool>true</bool>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::Box</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <property name="lineWidth">
-                 <number>3</number>
-                </property>
-                <property name="text">
-                 <string>Image</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </item>
            </layout>
           </item>
@@ -1236,22 +1291,15 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
-              <item>
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>578</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
                <widget class="QLabel" name="label_37">
+                <property name="maximumSize">
+                 <size>
+                  <width>80</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::Box</enum>
                 </property>
@@ -1262,62 +1310,6 @@
                  <set>Qt::AlignCenter</set>
                 </property>
                </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>578</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>1258</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>368</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>368</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
               <item>
                <widget class="MplWidget" name="MplWidget" native="true"/>
@@ -1343,438 +1335,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_4">
-       <attribute name="title">
-        <string>Page</string>
-       </attribute>
-       <widget class="QWidget" name="formLayoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>30</x>
-          <y>20</y>
-          <width>2271</width>
-          <height>1021</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0">
-         <property name="spacing">
-          <number>16</number>
-         </property>
-         <item row="2" column="1">
-          <widget class="QLabel" name="cropResult_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <property name="lineWidth">
-            <number>3</number>
-           </property>
-           <property name="text">
-            <string>Image</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QLabel" name="cropShow_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <property name="lineWidth">
-            <number>3</number>
-           </property>
-           <property name="text">
-            <string>Image</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_22">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="text">
-            <string>Image Crop</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1" colspan="2">
-          <widget class="MplWidget" name="MplWidget_2" native="true"/>
-         </item>
-         <item row="4" column="1" colspan="2">
-          <widget class="QLabel" name="label_41">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="text">
-            <string>HISTOGRAM</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QFrame" name="frame_4">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <property name="lineWidth">
-            <number>2</number>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1,0,0">
-              <property name="spacing">
-               <number>3</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_38">
-                <property name="text">
-                 <string>Coordinate X-Value:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QScrollBar" name="xValue_2">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>640</number>
-                </property>
-                <property name="sliderPosition">
-                 <number>320</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="x_spin_2">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>640</number>
-                </property>
-                <property name="stepType">
-                 <enum>QAbstractSpinBox::DefaultStepType</enum>
-                </property>
-                <property name="value">
-                 <number>320</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="value_x_2">
-                <property name="text">
-                 <string>X-Axis: 320</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1,0,0">
-              <property name="spacing">
-               <number>3</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_39">
-                <property name="text">
-                 <string>Coordinate Y-Value:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QScrollBar" name="yValue_2">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>480</number>
-                </property>
-                <property name="sliderPosition">
-                 <number>240</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="y_spin_2">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>480</number>
-                </property>
-                <property name="value">
-                 <number>240</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="value_y_2">
-                <property name="text">
-                 <string>Y-Axis : 240</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="2" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1,0,0">
-              <property name="spacing">
-               <number>3</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_40">
-                <property name="text">
-                 <string>Radius (pixel)</string>
-                </property>
-                <property name="textFormat">
-                 <enum>Qt::PlainText</enum>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QScrollBar" name="radValue_2">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>480</number>
-                </property>
-                <property name="sliderPosition">
-                 <number>240</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="rad_spin_2">
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::UpDownArrows</enum>
-                </property>
-                <property name="accelerated">
-                 <bool>false</bool>
-                </property>
-                <property name="showGroupSeparator" stdset="0">
-                 <bool>false</bool>
-                </property>
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>480</number>
-                </property>
-                <property name="value">
-                 <number>240</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="value_rad_2">
-                <property name="text">
-                 <string>Radius: 240</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,1,0">
-           <property name="spacing">
-            <number>11</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="openImage_2">
-             <property name="text">
-              <string>Open</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="Folder_2">
-             <property name="text">
-              <string>Open File Folder</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="clearCropped_3">
-             <property name="text">
-              <string>clear</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="1">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="2">
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="7" column="1" colspan="2">
-          <spacer name="verticalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>15</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="3" column="1" colspan="2">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="5" column="1" colspan="2">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_23">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="text">
-            <string>Image Result</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
      </widget>
     </item>
    </layout>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>2</width>
-      <height>2</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_13"/>
-   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSave">
