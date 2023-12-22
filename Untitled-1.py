@@ -50,7 +50,6 @@ class RealTimePlot:
         self.plot_thread.start()
 
     def get_sensor_reading(self):
-        # Replace this function with your actual method to get sensor readings
         return [np.random.rand() for _ in range(self.num_sensors)]
 
     def create_plot(self):
@@ -102,15 +101,6 @@ class AromaPlot(QWidget):
         self.button_choose_file.clicked.connect(self.load_sensor_data)
         self.button_choose_file.setStyleSheet("background-color: #007BFF; color: white; border: none; padding: 10px;")
 
-        
-
-
-        # layout = QVBoxLayout()
-        # toolbar = NavigationToolbar(self.figure.canvas, self.figure.canvas)
-        # toolbar.addAction('save', self.save_plot)
-        # layout.addWidget(toolbar)
-        # layout.addWidget(self.button_choose_file)
-        # layout.addWidget(FigureCanvas(self.figure))
         layout = QVBoxLayout()
         
         self.canvas = FigureCanvas(self.figure)
@@ -176,20 +166,9 @@ class AromaPlot(QWidget):
             self.sensor_data=self.read_csv(self.csvname)
             self.update_plots()
 
-    # def save_plot(self):
-    #     options = QFileDialog.Options()
-    #     options |= QFileDialog.DontUseNativeDialog
-    #     file_name, _ = QFileDialog.getSaveFileName(
-    #         self, "Save Plot", "", "PNG Files (*.png);;All Files (*)", options=options
-    #     )
-
-    #     if file_name:
-    #         self.figure.savefig(file_name)
-
     def read_csv(self, csv_name):
-        if self.sensor_data is not None:
-            self.csv_title.setText("Image title:\n"+ (self.sensor_data))  
-
+        # if self.sensor_data is not None:
+            # self.csv_title.setText("Image title:"+ (self.sensor_data))  
 
         with open(csv_name, "r") as file:
             reader = csv.reader(file)
@@ -217,8 +196,6 @@ class AromaPlot(QWidget):
             # Plot combined data
             self.ax_combined.clear()
             
-            # for i in range(num_columns):
-            #     self.ax_combined.plot(time_column, self.sensor_data[:, i], label=f"Sensor {i + 1}")
             
             for i in range(num_columns):
                 sensor_label = sensor_labels.get(i + 1, f"Sensor {i + 1}")
@@ -259,38 +236,7 @@ class AromaPlot(QWidget):
             # Redraw the figure
             self.figure.tight_layout()
             self.figure.canvas.draw()
-        
-    # def update_realtime(self,data):
-    #     if data.size > 0:
-    #         # num_columns=data.size
-    #         num_rows, num_columns = data.shape
-    #         time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
-
-    #         self.ax_combined.clear()
-    #         for i in range(num_columns):
-    #             self.ax_combined.plot(time_column, data, label="Real-Time Data")
-    #         self.ax_combined.set_xlabel("Time (s)")
-    #         self.ax_combined.set_ylabel("Sensor Values")
-    #         self.ax_combined.legend()
-
-    #         self.figure.tight_layout()
-    #         self.figure.canvas.draw()
-
-    # def update_realtime(self, data):
-    #     if data.size > 0:
-    #         num_rows, num_columns = data.shape
-    #         time_column = np.arange(0, num_rows * self.time_increment, self.time_increment)
-
-    #         self.ax_combined.clear()  # Clear the axes only once
-    #         for i in range(num_columns):
-    #             self.ax_combined.plot(time_column, data[:, i], label=f"Real-Time Data {i + 1}")
-
-    #         self.ax_combined.set_xlabel("Time (s)")
-    #         self.ax_combined.set_ylabel("Sensor Values")
-    #         self.ax_combined.legend()
-
-    #         self.figure.tight_layout()
-    #         self.figure.canvas.draw()
+    
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -630,7 +576,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(vision, self)
         self.initUI()
         self.cam_setting = {}
-        self.collect_data = True #data collectin control flag
+        self.collect_data = True 
         self.timer_sensor = True
         self.p1 = None
         self.image_active = False
@@ -749,7 +695,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.file_frame)
 
         # self.cameraSelect = QtWidgets.QComboBox(self)
-        self.cameraSelect.addItem("Camera 1", 0)
+        self.cameraSelect.addItem("Camera 1", 0)  
         self.cameraSelect.addItem("Camera 2", 1)
         self.cameraSelect.addItem("Camera 3", 2)
         # self.cameraSelect.currentIndexChanged.connect(self.handleCameraSelection)
@@ -777,23 +723,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.y_spin.valueChanged.connect(lambda value: self.yValue.setValue(value))
         self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
 
-
         self.openImage.clicked.connect(self.manual_load_image)
         # self.clearCropped_2.clicked.connect(self.clearCrop)
         self.saveResult.clicked.connect(self.saveImage)
         # self.addToolBar(NavigationToolbar(any, self))
         
-
-        
-
         self.clearCrop()
         self.clearSerial()
 
         self.image_original = None
         self.image_cropped = None
-        
-
-
 
 
         # self.crop_image()

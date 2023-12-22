@@ -73,7 +73,7 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>1164</width>
+        <width>0</width>
         <height>915</height>
        </size>
       </property>
@@ -84,7 +84,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -116,8 +116,11 @@
             <property name="maximumSize">
              <size>
               <width>641</width>
-              <height>37</height>
+              <height>40</height>
              </size>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
             </property>
             <property name="frameShape">
              <enum>QFrame::Box</enum>
@@ -133,14 +136,14 @@
               <widget class="QLabel" name="label_2">
                <property name="minimumSize">
                 <size>
-                 <width>131</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>131</width>
-                 <height>25</height>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
