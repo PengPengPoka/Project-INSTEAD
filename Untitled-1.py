@@ -20,6 +20,8 @@ from tqdm import tqdm
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.lines import Line2D
+from PyQt5.QtWidgets import QMainWindow, QLabel
+from PyQt5.QtWidgets import QGridLayout, QWidget, QDesktopWidget
 import matplotlib.pyplot as plt
 from collections import deque
 import numpy as np
@@ -100,6 +102,8 @@ class AromaPlot(QWidget):
         self.button_choose_file.clicked.connect(self.load_sensor_data)
         self.button_choose_file.setStyleSheet("background-color: #007BFF; color: white; border: none; padding: 10px;")
 
+        
+
 
         # layout = QVBoxLayout()
         # toolbar = NavigationToolbar(self.figure.canvas, self.figure.canvas)
@@ -118,8 +122,14 @@ class AromaPlot(QWidget):
         button_layout = QVBoxLayout()
         button_layout.addWidget(self.button_choose_file, alignment=Qt.AlignCenter)
 
+        
+
+        self.csv_title = QLabel("Image title:\n")
+        self.csv_title.setAlignment(Qt.AlignCenter)   
+
         layout.addWidget(toolbar)
         layout.addLayout(button_layout)
+        layout.addWidget(self.csv_title)
         layout.addWidget(self.canvas)
 
 
@@ -130,7 +140,7 @@ class AromaPlot(QWidget):
 
         self.sensor_data = None
         self.open_csv = False
-        self.time_increment = 0.3# Default time increment (1 second)
+        self.time_increment = 0.3
         self.update_plots()
 
     def load_sensor_data(self):
@@ -144,6 +154,10 @@ class AromaPlot(QWidget):
             self.open_csv = not self.open_csv
             self.sensor_data = self.read_csv(csv_name)
             self.update_plots()
+            self.csv_title.setText("Image title:\n"+(csv_name))  
+            # self.title_label.setText(os.path.basename(csv_name)) 
+
+
 
     def auto_load_csv(self,csv_filename):
         if self.open_csv == True:
@@ -173,6 +187,10 @@ class AromaPlot(QWidget):
     #         self.figure.savefig(file_name)
 
     def read_csv(self, csv_name):
+        if self.sensor_data is not None:
+            self.csv_title.setText("Image title:\n"+ (self.sensor_data))  
+
+
         with open(csv_name, "r") as file:
             reader = csv.reader(file)
             next(reader)  # Skip header row
@@ -326,8 +344,8 @@ class DataSamplingThread(QtCore.QThread):
 
                 with open(csv_filename, mode='w', newline='') as csv_file:
                     csv_writer = csv.writer(csv_file)
-                    header = ["Sensor 1", "Sensor 2", "Sensor 3",
-                              "Sensor 4", "Sensor 5", "Sensor 6"]
+                    header = ["MQ 7", "MQ 9", "TGS 822",
+                              "TGS 2600", "TGS 2602", "TGS 2611"]
                     csv_writer.writerow(header)
                    
                     for j in tqdm(range(self.amount), desc=f'Progress ({ser.name}) Data ({i})', leave=False):
@@ -648,6 +666,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         splitter.addWidget(self.tabWidget)  
 
         self.setCentralWidget(splitter)
+        self.showMaximized()
+        # self.showNormal() 
+
+        # qtRectangle = self.frameGeometry()
+        # centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        # qtRectangle.moveCenter(centerPoint)
+        # self.move(qtRectangle.topLeft())
+    
         
         # self.ImageCheck()
 
@@ -687,7 +713,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.refreshScreen.clicked.connect(self.clearSerial)
         self.open_folder.clicked.connect(self.openFolder)
         self.open_folder_2.clicked.connect(self.openFolder)
-        self.pixelData.clicked.connect(self.getHist)
+        self.pixelData.clicked.connect(self.save2Excel)
 
         self.log_display.setReadOnly(True)
         sys.stdout = TextStream(self.log_display)
@@ -783,10 +809,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def updateYValue(self, value):
         self.value_y.setText(f'Y-Axis: {value}')
       
-    
     def updateradValue(self, value):
         self.value_rad.setText(f'Radius: {value}')
-    
 
     def update_sliders(self):
 
@@ -834,6 +858,34 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         ax.set_title("RGB values")
         ax.legend()
 
+    def save2Excel(self, image,filename, save_to_excel=False):
+        non_black_mask = np.any(image != [0, 0, 0], axis=2).astype(np.uint8)
+
+        color = ['b', 'g', 'r']
+        plt.figure(figsize=(10, 5))
+        plt.title(filename)
+
+        df = pd.DataFrame()
+
+        for channel, col in enumerate(color):
+            plt.subplot(1, 3, channel + 1)
+            histogram = cv.calcHist([image], [channel], mask=non_black_mask, histSize=[256], ranges=[0, 256])
+            plt.plot(histogram, color=col[0])
+            plt.title(col.upper() + " channel")
+            plt.xlim(0, 256)
+
+            # Save histogram data to DataFrame
+            df[col] = histogram.flatten()
+
+        df.to_csv(filename, encoding='utf-8', index=False)
+
+        plt.xlabel("RGB values")
+        plt.ylabel("Pixel Frequency")
+        plt.tight_layout()
+
+        # Save the DataFrame to an Excel file
+        if save_to_excel:
+            df.to_excel(f"{filename}.xlsx", index=False)
 
     
     def auto_load_image(self):
@@ -851,7 +903,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def manual_load_image(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Image Files (*.png *.jpg *.bmp);;All Files (*)", options=options)            
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Image Files (*.png *.jpg *.bmp);;All Files (*)", options=options)     
+               
 
         if file_name:
             self.image_original = cv.imread(file_name)
@@ -861,6 +914,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.image_original = cv.cvtColor(self.image_original, cv.COLOR_BGR2RGB)
             self.image_active = True
             #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+
+            self.image_title.setText("Image title:\n"  + (file_name))  
             
             self.update_sliders()
             self.display_images()
@@ -983,7 +1038,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         QMessageBox.information(self, "Data collection","complete")
         self.log_display.append("Data collection completed.")
         # self.DataThread.filename_signal.connect(self.aroma_widget.auto_load_csv)
-        self.aroma_widget.auto_load_csv()
+        # self.aroma_widget.auto_load_csv()
         # self.file_name_signal.connect()    
 
     def openFolder(self):
@@ -1130,6 +1185,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             # Ui_MainWindow.file_name = file_name
             self.file_name=file_name
             self.file_name_signal.emit(file_name)
+
+            self.image_title.setText((file_name))  
 
             # self.image_processor = ImageProcessor(file_name)
             # self.image_processor.image_processed.connect(self.update_image)

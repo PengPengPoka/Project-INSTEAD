@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1192</width>
-    <height>992</height>
+    <width>1184</width>
+    <height>960</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,12 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
@@ -67,14 +73,14 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>0</width>
-        <height>0</height>
+        <width>1164</width>
+        <height>915</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>1920</width>
-        <height>1200</height>
+        <width>3840</width>
+        <height>24400</height>
        </size>
       </property>
       <property name="currentIndex">
@@ -123,12 +129,18 @@
              <number>1</number>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
-             <item alignment="Qt::AlignHCenter">
+             <item>
               <widget class="QLabel" name="label_2">
+               <property name="minimumSize">
+                <size>
+                 <width>131</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="maximumSize">
                 <size>
                  <width>131</width>
-                 <height>18</height>
+                 <height>25</height>
                 </size>
                </property>
                <property name="text">
@@ -314,12 +326,12 @@
                    </item>
                   </layout>
                  </widget>
-                 <widget class="QWidget" name="">
+                 <widget class="QWidget" name="layoutWidget">
                   <property name="geometry">
                    <rect>
                     <x>20</x>
                     <y>10</y>
-                    <width>181</width>
+                    <width>182</width>
                     <height>41</height>
                    </rect>
                   </property>
@@ -465,7 +477,7 @@
                       <property name="maximumSize">
                        <size>
                         <width>200</width>
-                        <height>10</height>
+                        <height>15</height>
                        </size>
                       </property>
                       <property name="text">
@@ -478,7 +490,7 @@
                       <property name="maximumSize">
                        <size>
                         <width>300</width>
-                        <height>28</height>
+                        <height>30</height>
                        </size>
                       </property>
                       <property name="text">
@@ -498,10 +510,16 @@
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>35</height>
+                       </size>
+                      </property>
                       <property name="maximumSize">
                        <size>
-                        <width>250</width>
-                        <height>60</height>
+                        <width>3028</width>
+                        <height>2400</height>
                        </size>
                       </property>
                       <property name="text">
@@ -517,9 +535,15 @@
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>35</height>
+                       </size>
+                      </property>
                       <property name="maximumSize">
                        <size>
-                        <width>120</width>
+                        <width>3028</width>
                         <height>35</height>
                        </size>
                       </property>
@@ -554,7 +578,7 @@
             <property name="maximumSize">
              <size>
               <width>640</width>
-              <height>35</height>
+              <height>40</height>
              </size>
             </property>
             <property name="frameShape">
@@ -572,7 +596,7 @@
                <property name="maximumSize">
                 <size>
                  <width>613</width>
-                 <height>13</height>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -753,8 +777,8 @@
               <widget class="QPushButton" name="startSampling">
                <property name="maximumSize">
                 <size>
-                 <width>140</width>
-                 <height>30</height>
+                 <width>150</width>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
@@ -766,8 +790,8 @@
               <widget class="QPushButton" name="refreshScreen">
                <property name="maximumSize">
                 <size>
-                 <width>125</width>
-                 <height>30</height>
+                 <width>150</width>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
@@ -777,10 +801,16 @@
              </item>
              <item row="2" column="0">
               <widget class="QPushButton" name="open_folder">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="maximumSize">
                 <size>
-                 <width>125</width>
-                 <height>30</height>
+                 <width>150</width>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
@@ -930,128 +960,6 @@
         <string>Vision Analysis</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_12">
-        <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
-              </property>
-              <property name="text">
-               <string>Image Crop</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="cropResult">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>320</width>
-                <height>320</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>640</width>
-                <height>640</height>
-               </size>
-              </property>
-              <property name="autoFillBackground">
-               <bool>true</bool>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <property name="lineWidth">
-               <number>3</number>
-              </property>
-              <property name="text">
-               <string>Image</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QLabel" name="label_21">
-                <property name="frameShape">
-                 <enum>QFrame::Box</enum>
-                </property>
-                <property name="text">
-                 <string>Image Result</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="cropShow_2">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>320</width>
-                  <height>320</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>640</width>
-                  <height>640</height>
-                 </size>
-                </property>
-                <property name="autoFillBackground">
-                 <bool>true</bool>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::Box</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <property name="lineWidth">
-                 <number>3</number>
-                </property>
-                <property name="text">
-                 <string>Image</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -1276,7 +1184,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="Folder">
+             <widget class="QPushButton" name="pixelData">
               <property name="text">
                <string>Save Pixel Data</string>
               </property>
@@ -1290,21 +1198,112 @@
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_37">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>300</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="text">
+               <string>HISTOGRAM</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QLabel" name="label_37">
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>25</height>
-                 </size>
-                </property>
+               <widget class="MplWidget" name="MplWidget" native="true"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="label_20">
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="text">
+               <string>Image Crop</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="cropResult">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>320</width>
+                <height>320</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>640</width>
+                <height>640</height>
+               </size>
+              </property>
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <property name="lineWidth">
+               <number>3</number>
+              </property>
+              <property name="text">
+               <string>Image</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_21">
                 <property name="frameShape">
                  <enum>QFrame::Box</enum>
                 </property>
                 <property name="text">
-                 <string>HISTOGRAM</string>
+                 <string>Image Result</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -1312,26 +1311,63 @@
                </widget>
               </item>
               <item>
-               <widget class="MplWidget" name="MplWidget" native="true"/>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+               <widget class="QLabel" name="cropShow_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="sizeHint" stdset="0">
+                <property name="minimumSize">
                  <size>
-                  <width>1258</width>
-                  <height>20</height>
+                  <width>320</width>
+                  <height>320</height>
                  </size>
                 </property>
-               </spacer>
+                <property name="maximumSize">
+                 <size>
+                  <width>640</width>
+                  <height>640</height>
+                 </size>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>true</bool>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>3</number>
+                </property>
+                <property name="text">
+                 <string>Image</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
            </layout>
           </item>
          </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="image_title">
+          <property name="text">
+           <string>Image Title: </string>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
