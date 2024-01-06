@@ -114,7 +114,7 @@ class AromaPlot(QWidget):
 
         
 
-        self.csv_title = QLabel("Image title:\n")
+        self.csv_title = QLabel("File name:\n")
         self.csv_title.setAlignment(Qt.AlignCenter)   
 
         layout.addWidget(toolbar)
@@ -144,7 +144,7 @@ class AromaPlot(QWidget):
             self.open_csv = not self.open_csv
             self.sensor_data = self.read_csv(csv_name)
             self.update_plots()
-            self.csv_title.setText("Image title:\n"+(csv_name))  
+            self.csv_title.setText("File name:"+(csv_name))  
             # self.title_label.setText(os.path.basename(csv_name)) 
 
 
@@ -235,8 +235,7 @@ class AromaPlot(QWidget):
 
             # Redraw the figure
             self.figure.tight_layout()
-            self.figure.canvas.draw()
-    
+            self.figure.canvas.draw()   
 
 class DataSamplingThread(QtCore.QThread):
     update_signal = QtCore.pyqtSignal(str)
@@ -313,6 +312,7 @@ class DataSamplingThread(QtCore.QThread):
                     break
 
 class TextStream(StringIO):
+
     def __init__(self, text_edit):
         super().__init__()
         self.text_edit = text_edit
@@ -330,7 +330,10 @@ class SecondWindow(QtWidgets.QDialog):
 
         self.initUI()
         self.cam_setting = {}
-        
+
+        # self.config_timer = QTimer(self)
+        # self.config_timer.timeout.connect(self.updateCameraSettings)
+        # self.config_timer.start(100)
 
     def initUI(self):
         self.cam = Camera()
@@ -423,7 +426,7 @@ class SecondWindow(QtWidgets.QDialog):
     def updateSaturationLabel(self, value):
         self.label_saturation.setText(f"Saturation: {value}")
         self.slider_values['saturation'] = value
-        self.applyCameraSetting('exposure',value)
+        self.applyCameraSetting('saturation',value)
 
 
     def updateWhiteBalanceLabel(self, value):
@@ -466,7 +469,7 @@ class SecondWindow(QtWidgets.QDialog):
         self.label_tilt.setText(f"Tilt: {value}")
         self.slider_values['tilt'] = value
         self.applyCameraSetting('tilt',value)
-
+    
 
     def updateBrightnessLabel(self, value):
         self.label_brightness.setText(f"Brightness: {value}")
@@ -532,7 +535,6 @@ class SecondWindow(QtWidgets.QDialog):
             with open(file_name, 'w') as configfile:
                 config.write(configfile)
 
-    # Ensure the camera is opened and a valid device is available
         if self.video_capture.isOpened():
             # device.set(cv.CAP_PROP_AUTOFOCUS,0)
             # device.set(cv.CAP_PROP_AUTO_WB,0)
@@ -563,6 +565,7 @@ class SecondWindow(QtWidgets.QDialog):
 
         dialog.exec_() 
 
+
 class Ui_MainWindow(QtWidgets.QMainWindow):
     update_lcd_signal = pyqtSignal(int)
     file_name_signal = pyqtSignal(str)
@@ -576,57 +579,42 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(vision, self)
         self.initUI()
         self.cam_setting = {}
-        self.collect_data = True 
-        self.timer_sensor = True
-        self.p1 = None
-        self.image_active = False
 
-        global global_self
-        global_self = self
-        self.serial_port = None
-        self.found_port = False
-        self.data_collection_thread = None
-        self.sample_name = ""
-        self.last_name=""
-        self.file_name = ""
-        self.open_csv = False
 
-        self.shot_count = 1
-
-        self.threadpool = QThreadPool()
-        self.update_lcd_signal.connect(self.update_repetition_lcd)
-        
-
-        self.img_path = None
-        self.img = None
-        self.x = 0
-        self.y = 0
-        self.radius = 0
-
-        # self.DataThread = DataSamplingThread()
 
         self.aroma_widget =AromaPlot()
         self.tabWidget.addTab(self.aroma_widget, "Aroma Analysis")
 
         splitter = QSplitter(self)
         splitter.addWidget(self.tabWidget)  
-
         self.setCentralWidget(splitter)
-        self.showMaximized()
+
+        # self.showMaximized()
         # self.showNormal() 
 
         # qtRectangle = self.frameGeometry()
         # centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
         # qtRectangle.moveCenter(centerPoint)
         # self.move(qtRectangle.topLeft())
-    
-        
-        # self.ImageCheck()
-
-        pass
-
 
     def initUI(self):
+        self.image_active = False
+
+        self.sample_name = ""
+        self.last_name=""
+        self.file_name = ""
+        self.open_csv = False
+        self.shot_count = 1
+
+        self.threadpool = QThreadPool()
+        self.update_lcd_signal.connect(self.update_repetition_lcd)
+        
+        self.img_path = None
+        self.img = None
+        self.x = 0
+        self.y = 0
+        self.radius = 0
+        
         self.data_collector = None
         self.cam = Camera()
         self.central_widget = QTabWidget()
@@ -639,9 +627,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.camera_frame)
         
         self.startButton_2.clicked.connect(self.togglePlayback)
-        self.startButton.clicked.connect(self.togglePlayback)
         self.snapButton.clicked.connect(self.save_filename)
-
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateFrame)
@@ -649,8 +635,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         self.count = 0
         self.start = False
-    
-
 
         self.camConfig.clicked.connect(self.config_action)
         self.startSampling.clicked.connect(self.start_sampling)
@@ -667,19 +651,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
 
         self.timer2 = QTimer(self)
-        self.timer2.timeout.connect(self.showTime)
+        # self.timer2.timeout.connect(self.showTime)
         self.timer2.start(100)
 
         self.timer3 = QTimer(self)
         self.time3=QTime(0,0)
 
-        # Define your other widgets and actions here
 
         # self.path = "C:\\Users\\Lyskq\\Downloads\\gui\\default_param.txt"
         self.path = os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\default_param.txt") 
         self.cam.OpenSettings(self.path)
 
-        self.video_capture = cv.VideoCapture(0, cv.CAP_DSHOW)
+        self.camera_index = 0
+        self.video_capture = cv.VideoCapture(self.camera_index, cv.CAP_ANY)
         # self.setCameraProperties(device)
 
         if not self.video_capture.isOpened():
@@ -695,12 +679,27 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.file_frame)
 
         # self.cameraSelect = QtWidgets.QComboBox(self)
-        self.cameraSelect.addItem("Camera 1", 0)  
-        self.cameraSelect.addItem("Camera 2", 1)
-        self.cameraSelect.addItem("Camera 3", 2)
+
+        index = 0
+        camera_list= ["Camera 1", "Camera 2", "Camera 3"]
+        self.cameraSelect.addItems(camera_list)
+
+        print(self.cameraSelect.count())
+
+
+        # if self.cameraSelect.currentIndexChanged:
+            # self.changeCameraIndex(index_value)
+
+
+        # self.cameraSelect.addItem("Camera 1", 0)  
+        # self.cameraSelect.addItem("Camera 2", 1)
+        # self.cameraSelect.addItem("Camera 3", 2)
         # self.cameraSelect.currentIndexChanged.connect(self.handleCameraSelection)
         # self.cameraSelect.currentIndexChanged.connect(lambda index: self.changeCameraIndex(self.cameraSelect.itemData(index)))
         self.cameraSelect.currentIndexChanged.connect(lambda index: self.changeCameraIndex(index))
+        
+
+        
 
         self.xValue.valueChanged.connect(self.update_sliders)
         self.xValue.valueChanged.connect(self.updateXValue)
@@ -854,7 +853,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.image_active = True
             #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
-            self.image_title.setText("Image title:\n"  + (file_name))  
+            self.image_title.setText("File name:\n"  + (file_name))  
             
             self.update_sliders()
             self.display_images()
@@ -988,9 +987,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox(self, "Folder not found", "the folder doesn't exit, check again")
 
-    def update():
-        pass
-
     def clearSerial(self):
         self.log_display.clear()
 
@@ -1048,17 +1044,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.time3 = self.time3.addSecs(1)
         # self.sensorTime.setText(self.time3.toString("mm:ss"))
 
-    def showTime(self):
-        if self.start:
-            self.count -= 1
+    # def showTime(self):
+    #     if self.start:
+    #         self.count -= 1
 
-            if self.count == 0:
-                self.start = False
-                self.label.setText("Completed !!!! ")
+    #         if self.count == 0:
+    #             self.start = False
+    #             self.label.setText("Completed !!!! ")
 
-        if self.start:
-            text = str(self.count / 10) + " s"
-            self.label.setText(text)
+    #     if self.start:
+    #         text = str(self.count / 10) + " s"
+    #         self.label.setText(text)
 
     def get_seconds(self):
         self.start = False
@@ -1216,13 +1212,45 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def changeCameraIndex(self, index):
         # if self.changeCameraIndex(index) == 0:
         #     self.changeCameraIndex(1)
-        
+        displayed_index = self.cameraSelect.currentIndex() + 1
+        self.deviceSelected.setText(f'Device: {displayed_index}')
         self.video_capture.release()
-        self.deviceSelected.setText(f'Device: {index+1}')
-        if index == 0:
-            index =1
         self.video_capture = cv.VideoCapture(index)
+        self.camera_index = self.cameraSelect.currentIndex()
+        # self.cap = cv.VideoCapture(index)
+
+        if not self.video_capture.isOpened() and index != 0:
+            self.handle_camera_error()
+            self.deviceSelected.setText(f'Device: {displayed_index}')
+            self.camera_index = self.cameraSelect.currentIndex()
+
+
+        
+
+        # if not self.video_capture.isOpened():
+        #     self.deviceSelected.setText(f'Device: {displayed_index}')
+        #     self.handle_camera_error()
+        #     index = self.cameraSelect.currentIndex()
+        # else:
+        #     self.deviceSelected.setText(f'Device: {displayed_index}')
+        #     self.video_capture = cv.VideoCapture(index)
+        #     self.video_capture.release()
+        #     # if index == 0:
+        #     #     index =1
+        #     # index = self.cameraSelect.currentIndex()
+
+        #     pass
+
+            
     
+    def handle_camera_error(self):
+        error_dialog=QMessageBox()
+        error_dialog.setIcon(QMessageBox.Warning)
+        error_dialog.setText(f"The camera may not be connected, please check the configuration")
+        # message.setInformativeText("Cannot open camera at index {}".format(index)
+        error_dialog.setWindowTitle("Camera error")
+        error_dialog.setStandardButtons(QMessageBox.Ok)
+        error_dialog.exec_()
 
     def setPreferredExtension(self, extension):
         self.preferred_extension = extension
@@ -1230,11 +1258,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def config_action(self):
         sub_window = SecondWindow()
         sub_window.exec_()
+        # sub_window.show()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    
     window = Ui_MainWindow()
+    window.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
     window.show()
-
     
     sys.exit(app.exec_())
