@@ -9,8 +9,8 @@ import serial
 import numpy as np
 import subprocess
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer, Qt, QTime,QThread,QDateTime, pyqtSignal,QMutex, QMutexLocker,QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot
-from PyQt5.QtGui import QImage, QPixmap,QTextCursor, QColor
+from PyQt5.QtCore import QTimer, Qt, QTime,QThread,QDateTime, pyqtSignal,QMutex, QMutexLocker,QThreadPool, pyqtSignal as Signal, pyqtSlot as Slot,QSize,QEvent
+from PyQt5.QtGui import QImage, QPixmap,QTextCursor, QColor,QIcon
 from PyQt5.QtWidgets import QLabel, QTabWidget, QFileDialog, QInputDialog,QFrame, QSizePolicy,QPushButton,QDialog, QPushButton, QMessageBox, QSlider,QFrame,QSplitter, QLabel, QVBoxLayout,QWidget, QPushButton, QLabel
 # from PyQt5.QtWidgets import VBoxLayout
 from PyQt5 import QtCore,QtWidgets,uic
@@ -22,6 +22,7 @@ from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as Navigati
 from matplotlib.lines import Line2D
 from PyQt5.QtWidgets import QMainWindow, QLabel
 from PyQt5.QtWidgets import QGridLayout, QWidget, QDesktopWidget
+# from PyQt5.QtQml import qml
 import matplotlib.pyplot as plt
 from collections import deque
 import numpy as np
@@ -565,7 +566,6 @@ class SecondWindow(QtWidgets.QDialog):
 
         dialog.exec_() 
 
-
 class Ui_MainWindow(QtWidgets.QMainWindow):
     update_lcd_signal = pyqtSignal(int)
     file_name_signal = pyqtSignal(str)
@@ -579,7 +579,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(vision, self)
         self.initUI()
         self.cam_setting = {}
-
+        folder_path = os.path.expanduser("~\\Documents\\Project_INSTEAD\\")
+        self.check_folder(folder_path)
+        self.populate_camera_combobox()
 
 
         self.aroma_widget =AromaPlot()
@@ -632,6 +634,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateFrame)
         self.playback = False
+
+        self.availableCameraTimer=QTimer(self)
+        # self.availableCameraTimer.timeout.connect(self.get_available_cameras)
+        # self.availableCameraTimer.timeout.connect(self.check_cameras)
+        self.availableCameraTimer.start(3000)
         
         self.count = 0
         self.start = False
@@ -680,11 +687,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # self.cameraSelect = QtWidgets.QComboBox(self)
 
-        index = 0
-        camera_list= ["Camera 1", "Camera 2", "Camera 3"]
-        self.cameraSelect.addItems(camera_list)
+        # index = 0
+        # camera_list= ["Camera 1", "Camera 2", "Camera 3"]
+        # self.cameraSelect.addItems(camera_list)
 
-        print(self.cameraSelect.count())
+        # print(self.cameraSelect.count())
 
 
         # if self.cameraSelect.currentIndexChanged:
@@ -739,6 +746,64 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
         # self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
+
+    def check_folder(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        return path
+    
+    def populate_camera_combobox(self):
+        index = 0
+        try:
+            camera_list = []
+            for index in range(5):  
+                cap = cv.VideoCapture(index)
+                if cap.isOpened():
+                    camera_list.append(f"Camera {index + 1}")
+                    cap.release()
+
+            if camera_list:
+                self.cameraSelect.addItems(camera_list)
+            else:
+                self.handle_camera_error()
+
+        except Exception as e:
+            self.handle_camera_error()
+            # self.show_error_dialog(str(e))
+    
+    # def check_cameras(self):
+    #     available_cameras = self.get_available_cameras()
+    #     self.camera_list.append(f"Camera {index + 1}")
+    #     self.cameraSelect.addItems(self.camera_list)
+
+    #     if available_cameras:
+    #         self.video_capture = cv.VideoCapture(0)
+
+    # def get_available_cameras(self):
+    #     index = 0
+    #     self.camera_list = []
+    #     while True:
+    #         cap = cv.VideoCapture(index)
+    #         if not cap.isOpened():
+    #             break
+    #         self.camera_list.append(index)
+    #         cap.release()
+    #         index += 1
+    #     return self.camera_list
+    
+    
+
+
+        # camera_list= ["Camera 1", "Camera 2", "Camera 3"]
+        # self.cameraSelect.addItems(camera_list)
+        # print(self.cameraSelect.count())
+
+    # def show_no_camera_dialog(self):
+    #     print("No camera devices found.")
+
+    # def show_error_dialog(self, error_message):
+    #     print(f"An error occurred: {error_message}")
 
         
     def updateXValue(self, value):
@@ -1260,11 +1325,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sub_window.exec_()
         # sub_window.show()
 
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     
     window = Ui_MainWindow()
     window.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
+
     window.show()
     
     sys.exit(app.exec_())
