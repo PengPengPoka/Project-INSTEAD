@@ -82,13 +82,23 @@ class ImageProcessor(QWidget):
         NUM_CLASSES = 9
 
     def saveSegImage(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Segmented Image", "", "Images (*.png *.jpg *.bmp);;All Files (*)", options=options)
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        # file_name, _ = QFileDialog.getSaveFileName(self, "Save Segmented Image", "", "Images (*.png *.jpg *.bmp);;All Files (*)", options=options)
 
-        if file_name:
-            self.current_pixmap.save(file_name)
-            
+        # if file_name:
+        #     self.current_pixmap.save(file_name)
+
+        self.default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
+        default_save_location = os.path.join(self.default_folder, self.ui.getDefaultSaveName())
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Image", default_save_location, "Images (*.png *.jpg *.bmp *.jpeg)")
+
+        if file_path:
+            pixmap = self.current_pixmap  
+            pixmap.save(file_path)
+            message = f"Saved as {file_path}\nDirectory: {os.path.dirname(file_path)}"
+            QMessageBox.information(self, "File Saved", message)
+
 
     def ImageSegmentation(self,data_path):
         sample_test = load_img(data_path)
@@ -157,6 +167,8 @@ class ImageProcessor(QWidget):
         
         # self.mainWindow.classificationResult.setText("Result: " + str(result))
         self.ui.classificationResult.setText(f"Result: {result}")
+        
+
         # message = QMessageBox()
         # message.setWindowTitle("hasilnya ngab")
         # message.setText(result)
