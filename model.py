@@ -19,11 +19,10 @@ nambah library:
     - rembg
     - lib yang kurang lainnya
 """
- 
 
-weight_path = "C:\\Users\\OMEN\\Downloads\\best_model.hdf5"
+weight_path = "C:\\Users\\OMEN\\Downloads\\best_model 2.hdf5"
 background_path = "C:\\Users\\OMEN\\Downloads\\bg.jpg"
-data_path = "C:\\Users\\OMEN\\Repositories 2\\Project-INSTEAD\\Data_31-10-2023[7]\\Warna\\DUST2_3_1.jpg"
+data_path = "C:\\Users\\OMEN\\Downloads\\teh_sample_10.jpg"
 
 # Hyperparameter
 BATCH_SIZE = 32
@@ -32,7 +31,7 @@ LEARNING_RATE = 0.001
 IMG_DIMENSION = 224
 IMG_SIZE = (IMG_DIMENSION, IMG_DIMENSION)
 INPUT_SHAPE = (IMG_DIMENSION, IMG_DIMENSION, 3)
-NUM_CLASSES = 9
+NUM_CLASSES = 10
 
 def create_model():
     # Load pre-trained ResNet50 model
@@ -84,7 +83,7 @@ def classify():
     my_image = preprocess_input(my_image)
 
     #make the prediction
-    class_names = ["BOHEA", "BOP", "BOPF", "DUST", "DUST2", "F1", "PF", "PF2", "PF3"]
+    class_names = ["BOHEA", "BOP", "BOPF", "DUST", "DUST2", "F1", "F2", "PF", "PF2", "PF3"]
     class_probability = model.predict(my_image)
     class_name = np.argmax(class_probability, axis=1)
     print(class_names[class_name[0]])
