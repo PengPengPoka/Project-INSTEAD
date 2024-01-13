@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1288</width>
-    <height>1056</height>
+    <width>1280</width>
+    <height>1024</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -89,8 +89,11 @@
         <height>16777215</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1381,6 +1384,115 @@
              </layout>
             </item>
            </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <property name="styleSheet">
+        <string notr="true">background-color:#0b0e18</string>
+       </property>
+       <attribute name="title">
+        <string>Page</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_24">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_25">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #111926; color: white</string>
+                </property>
+                <property name="text">
+                 <string>File Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="selectedImage">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #111926; color: white</string>
+                </property>
+                <property name="text">
+                 <string>(path)</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="selectImage">
+              <property name="styleSheet">
+               <string notr="true">background-color:#3f4957;color:white</string>
+              </property>
+              <property name="text">
+               <string>Select Image</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="execProgram">
+              <property name="styleSheet">
+               <string notr="true">background-color:#f16311;color:white</string>
+              </property>
+              <property name="text">
+               <string>Run</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveSegmentedImage">
+              <property name="styleSheet">
+               <string notr="true">background-color:#3f4957;color:white</string>
+              </property>
+              <property name="text">
+               <string>Save Image</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <layout class="QVBoxLayout" name="verticalLayout_26">
+            <item>
+             <widget class="QLabel" name="classificationResult">
+              <property name="styleSheet">
+               <string notr="true">background-color: #111926; color: white</string>
+              </property>
+              <property name="text">
+               <string>Result:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="showSegmented">
+            <property name="styleSheet">
+             <string notr="true">background-color:#1e2837</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

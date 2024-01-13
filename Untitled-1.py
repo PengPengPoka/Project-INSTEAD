@@ -30,8 +30,151 @@ import threading
 import time
 import pandas as pd
 
-from matplotlib.figure import Figure
+import tensorflow as tf
+import keras
+from keras.applications import resnet50
+from keras.models import Model
+from keras.callbacks import ModelCheckpoint
+from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
+from keras.applications import ResNet50
+from keras.applications.resnet import preprocess_input
+from rembg import remove
+from keras.preprocessing.image import load_img
+import numpy as np
+import os
+# from PIL.ImageQt import ImageQt  
+from PIL import Image
+# from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap
+from PyQt5 import QtGui
+# from PyQt5.QtGui import QPixmap, QImage
+from PIL.ImageQt import ImageQt  # Correct import
+
+
+
+
+
+from matplotlib.figure import   Figure
 from Camera import Camera
+# from model import classify
+
+class ImageProcessor(QWidget):
+
+    def __init__(self, ui_main_window):
+        super().__init__()
+
+        self.ui = ui_main_window
+
+        global data_path,weight_path,background_path,BATCH_SIZE,EPOCHS,LEARNING_RATE,IMG_DIMENSION,IMG_SIZE,INPUT_SHAPE,NUM_CLASSES
+        # weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\best_model.hdf5"
+        # background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpg"
+        weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\best_model.hdf5"
+        background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpeg"
+        data_path= None
+
+        # Hyperparameter
+        BATCH_SIZE = 32
+        EPOCHS = 50
+        LEARNING_RATE = 0.001
+        IMG_DIMENSION = 224
+        IMG_SIZE = (IMG_DIMENSION, IMG_DIMENSION)
+        INPUT_SHAPE = (IMG_DIMENSION, IMG_DIMENSION, 3)
+        NUM_CLASSES = 9
+
+    def saveSegImage(self):
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        # file_name, _ = QFileDialog.getSaveFileName(self, "Save Segmented Image", "", "Images (*.png *.jpg *.bmp);;All Files (*)", options=options)
+
+        # if file_name:
+        #     self.current_pixmap.save(file_name)
+
+        self.default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\") 
+        default_save_location = os.path.join(self.default_folder, self.ui.getDefaultSaveName())
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Image", default_save_location, "Images (*.png *.jpg *.bmp *.jpeg)")
+
+        if file_path:
+            pixmap = self.current_pixmap  
+            pixmap.save(file_path)
+            message = f"Saved as {file_path}\nDirectory: {os.path.dirname(file_path)}"
+            QMessageBox.information(self, "File Saved", message)
+
+
+    def ImageSegmentation(self,data_path):
+        sample_test = load_img(data_path)
+        mask = remove(sample_test)
+        bg = load_img(background_path)
+        segmented_img = Image.composite(sample_test, bg, mask)
+        segmented_img = segmented_img.crop((80, 0, 560, 480))
+
+        img_array = np.array(segmented_img)  
+        qimage = QImage(img_array.data, img_array.shape[1], img_array.shape[0], QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(qimage)
+        self.current_pixmap=pixmap
+
+        self.ui.showSegmented.setPixmap(pixmap)
+
+    def create_model(self):
+        # Load pre-trained ResNet50 model
+        base_model = ResNet50(weights='imagenet', include_top=False, input_shape=INPUT_SHAPE)
+
+        # Freeze the layers in the base model
+        for layer in base_model.layers:
+            layer.trainable = False
+
+        # Add custom classification layers on top of the base model
+        x = base_model.output
+        x = keras.layers.GlobalAveragePooling2D()(x)
+        x = keras.layers.Dense(1024, activation='relu')(x)
+        predictions = keras.layers.Dense(NUM_CLASSES, activation='softmax')(x)
+
+        # Create the final model
+        model = Model(inputs=base_model.input, outputs=predictions)
+
+        # Compile the model
+        optimizer = keras.optimizers.Adam(learning_rate=LEARNING_RATE)
+        checkpoint = ModelCheckpoint(filepath=weight_path, verbose=1, save_best_only=True, monitor='val_accuracy', mode='max')
+        model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+        
+        return model
+
+    
+
+    def classify(self,data_path):
+        model = self.create_model()
+
+        # Checking model best performance score with data test
+        model.load_weights(weight_path)
+
+        #load segmented_image
+        my_image = load_img(data_path, target_size=IMG_SIZE)
+
+        #preprocess the image
+        my_image = img_to_array(my_image)
+        my_image = my_image.reshape((1, my_image.shape[0], my_image.shape[1], my_image.shape[2]))
+        my_image = preprocess_input(my_image)
+
+        #make the prediction
+        class_names = ["BOHEA", "BOP", "BOPF", "DUST", "DUST2", "F1", "PF", "PF2", "PF3"]
+        class_probability = model.predict(my_image)
+        class_name = np.argmax(class_probability, axis=1)
+
+        self.ImageSegmentation(data_path)
+        # segmented_img = ImageProcessor.ImageSegmentation()
+        # segmented_img()
+
+        result = (class_names[class_name[0]])
+        
+        # self.mainWindow.classificationResult.setText("Result: " + str(result))
+        self.ui.classificationResult.setText(f"Result: {result}")
+        
+
+        # message = QMessageBox()
+        # message.setWindowTitle("hasilnya ngab")
+        # message.setText(result)
+        # message.setStandardButtons(QMessageBox.Ok)
+        # message.exec_()
+        # return result
 
 class RealTimePlot:
     def __init__(self, num_sensors=6, plot_interval=1):
@@ -577,12 +720,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         vision =os.path.expanduser("~\\Documents\\Project_INSTEAD\\src\\vision_revisi.ui")
         # uic.loadUi("C:\\Users\\Lyskq\\Downloads\\gui\\vision.ui", self)
         uic.loadUi(vision, self)
+        self.classification = ImageProcessor(self)  # Pass the Ui_MainWindow instance
         self.initUI()
         self.cam_setting = {}
         folder_path = os.path.expanduser("~\\Documents\\Project_INSTEAD\\")
         self.check_folder(folder_path)
         self.populate_camera_combobox()
 
+        # self.modelAI=imageClassification()
 
         self.aroma_widget =AromaPlot()
         self.tabWidget.addTab(self.aroma_widget, "Aroma Analysis")
@@ -590,6 +735,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         splitter = QSplitter(self)
         splitter.addWidget(self.tabWidget)  
         self.setCentralWidget(splitter)
+
 
         # self.showMaximized()
         # self.showNormal() 
@@ -600,6 +746,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.move(qtRectangle.topLeft())
 
     def initUI(self):
+        self.data_path=None
         self.image_active = False
 
         self.sample_name = ""
@@ -733,12 +880,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.clearCropped_2.clicked.connect(self.clearCrop)
         self.saveResult.clicked.connect(self.saveImage)
         # self.addToolBar(NavigationToolbar(any, self))
+
+        # self.modelAI=imageClassification()
+        self.selectImage.clicked.connect(self.select_image)
+        self.execProgram.clicked.connect(self.start_classification)
+        self.saveSegmentedImage.clicked.connect(self.classification.saveSegImage)
+        #  self.SelectImage.clicked.connect(self.image_source)
+        # self.execProgram.clicked.connect(self.execute_model)
         
         self.clearCrop()
         self.clearSerial()
 
         self.image_original = None
         self.image_cropped = None
+        # self.classification=ImageProcessor()
 
 
         # self.crop_image()
@@ -746,6 +901,109 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.radioButton0.clicked.connect(lambda: self.changeCameraIndex(0))
         # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
         # self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
+    
+
+    def select_image(self):
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        # file_name, _ = QFileDialog.getOpenFileName(self, "Choose Image", "", "Image Files (*.png *.jpg *.bmp);;All Files (*)", options=options)
+
+        # if file_name:
+        #     self.data_path = file_name
+        #     self.selectedImage.setText(f"Image Path: {self.data_path}")
+        file_dialog = QFileDialog()
+        file_dialog.setNameFilter("Images (*.png *.jpg *.bmp)")
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+
+        if file_dialog.exec_():
+            self.file_path = file_dialog.selectedFiles()[0]
+            self.selectedImage.setText(f"Selected Image Path: {self.file_path}")
+
+            # Call your existing code with the new file_path
+            # data_path = self.file_path.replace('\\', '/')
+            # self.classification.classify(data_path)
+
+    def start_classification(self):
+        if self.file_path:
+            # data_path = rf"{self.data_path}"
+            data_path = self.file_path.replace('\\', '/')
+
+            message = QMessageBox()
+            message.setWindowTitle("You sure wnat to process this file?")
+            message.setText(data_path)
+            message.setIcon(QMessageBox.Information)
+            message.setStandardButtons(QMessageBox.Ok)
+            message.exec_()
+            self.classification.classify(data_path)
+
+            # result = self.classification.classify(data_path)
+            # self.classification.classify(data_path)
+            # self.classificationResult.setText(f"Result: {result}")
+        else:
+            self.classificationResult.setText("Result: Please select an image before starting the classification.")
+
+
+    def image_source(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "Choose Image", "", "Image Files (*.png *.jpg *.bmp);;All Files (*)", options=options)     
+               
+
+        if file_name:
+            self.selectedImage.setText("File name:\n"  + (file_name))  
+            # data_path = file_name + ".png"
+            self.data_path = file_name + ".png"
+
+            
+            
+            # self.image_original = cv.imread(file_name)
+            # self.image_cropped = self.image_original.copy()
+
+            # self.image_cropped = cv.cvtColor(self.image_cropped, cv.COLOR_BGR2RGB)
+            # self.image_original = cv.cvtColor(self.image_original, cv.COLOR_BGR2RGB)
+            # self.image_active = True
+            #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+
+            
+            # self.update_sliders()
+            # self.display_images()
+        
+    # def run_model(self):
+    #     if self.data_path:
+    #         script_path = "C:\Users\Lyskq\Documents\Project_INSTEAD\src\model.py"
+    #         subprocess.run(["python",script_path,"--image_path",self.data_path])
+
+    def execute_model(self):
+        # Check if the data_path is set
+        if hasattr(self, 'data_path'):
+            # Execute the model.py script with the selected image path as an argument
+            script_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\model.py"
+            subprocess.run(["python", script_path, "--image_path", self.data_path])
+        else:
+            # Notify the user to select an image first
+            QMessageBox.warning(self, "Image Not Selected", "Please select an image before running the model.")
+        
+    def showSegmentedImage(self, segmented_image_path):
+        # Display the segmented image in the QLabel
+        pixmap = QPixmap(segmented_image_path)
+        self.segmentedImage.setPixmap(pixmap)
+
+        # Enable the save button
+        self.saveSegmentedImage.setEnabled(True)
+
+    def saveSegmentedImage(self):
+        # Save the segmented image when the button is clicked
+        default_folder = os.path.expanduser("~\\Documents\\Project_INSTEAD\\")
+        default_save_location = os.path.join(default_folder, "segmented_image.png")
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Segmented Image", default_save_location, "Images (*.png *.jpg *.bmp *.jpeg)")
+
+        if file_path:
+            # Get the current pixmap from the label
+            pixmap = self.segmentedImage.pixmap()
+            
+            # Save the pixmap to the specified file path
+            pixmap.save(file_path)
+    
 
     def check_folder(self, path):
         if not os.path.exists(path):
@@ -1331,7 +1589,9 @@ if __name__ == "__main__":
     
     window = Ui_MainWindow()
     window.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
-
+    # classification_instance = imageClassification()
+    # classification_instance.image_source()
+    # classification_instance.execute_model()
     window.show()
     
     sys.exit(app.exec_())
