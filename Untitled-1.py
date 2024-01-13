@@ -79,7 +79,7 @@ class ImageProcessor(QWidget):
         IMG_DIMENSION = 224
         IMG_SIZE = (IMG_DIMENSION, IMG_DIMENSION)
         INPUT_SHAPE = (IMG_DIMENSION, IMG_DIMENSION, 3)
-        NUM_CLASSES = 9
+        NUM_CLASSES = 10
 
     def saveSegImage(self):
         # options = QFileDialog.Options()
@@ -155,7 +155,7 @@ class ImageProcessor(QWidget):
         my_image = preprocess_input(my_image)
 
         #make the prediction
-        class_names = ["BOHEA", "BOP", "BOPF", "DUST", "DUST2", "F1", "PF", "PF2", "PF3"]
+        class_names = ["BOHEA", "BOP", "BOPF", "DUST", "DUST2", "F1","F2", "PF", "PF2", "PF3"]
         class_probability = model.predict(my_image)
         class_name = np.argmax(class_probability, axis=1)
 
