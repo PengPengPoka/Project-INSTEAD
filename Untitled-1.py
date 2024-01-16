@@ -48,7 +48,7 @@ from PIL import Image
 from PyQt5.QtGui import QPixmap
 from PyQt5 import QtGui
 # from PyQt5.QtGui import QPixmap, QImage
-from PIL.ImageQt import ImageQt  # Correct import
+# from PIL.ImageQt import ImageQt  # Correct import
 
 
 
@@ -57,6 +57,7 @@ from PIL.ImageQt import ImageQt  # Correct import
 from matplotlib.figure import   Figure
 from Camera import Camera
 # from model import classify
+
 
 class ImageProcessor(QWidget):
 
@@ -68,7 +69,7 @@ class ImageProcessor(QWidget):
         global data_path,weight_path,background_path,BATCH_SIZE,EPOCHS,LEARNING_RATE,IMG_DIMENSION,IMG_SIZE,INPUT_SHAPE,NUM_CLASSES
         # weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\best_model.hdf5"
         # background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpg"
-        weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\best_model.hdf5"
+        weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\best_model.hdf5"
         background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpeg"
         data_path= None
 
@@ -730,7 +731,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.modelAI=imageClassification()
 
         self.aroma_widget =AromaPlot()
-        self.tabWidget.addTab(self.aroma_widget, "Aroma Analysis")
+        # self.tabWidget.addTab(self.aroma_widget, "Aroma Analysis")
+        self.tabWidget.insertTab(3, self.aroma_widget, "Aroma Analysis")
+        # self.tabWidget.currentIndex(5)
+
 
         splitter = QSplitter(self)
         splitter.addWidget(self.tabWidget)  
@@ -1177,6 +1181,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
             self.image_title.setText("File name:\n"  + (file_name))  
+            # self.image_title.setText("File name: "  + (file_name))  
             
             self.update_sliders()
             self.display_images()
