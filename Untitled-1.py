@@ -49,8 +49,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5 import QtGui
 # from PyQt5.QtGui import QPixmap, QImage
 # from PIL.ImageQt import ImageQt  # Correct import
-
-
+from datetime import datetime
 
 
 
@@ -69,7 +68,7 @@ class ImageProcessor(QWidget):
         global data_path,weight_path,background_path,BATCH_SIZE,EPOCHS,LEARNING_RATE,IMG_DIMENSION,IMG_SIZE,INPUT_SHAPE,NUM_CLASSES
         # weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\best_model.hdf5"
         # background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpg"
-        weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\best_model.hdf5"
+        weight_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\best_model1.hdf5"
         background_path = "C:\\Users\\Lyskq\\Documents\\Project_INSTEAD\\src\\bg.jpeg"
         data_path= None
 
@@ -167,8 +166,9 @@ class ImageProcessor(QWidget):
         result = (class_names[class_name[0]])
         
         # self.mainWindow.classificationResult.setText("Result: " + str(result))
-        self.ui.classificationResult.setText(f"Result: {result}")
         
+        self.ui.classificationResult.setText(f"Result: {result}")
+        self.ui.classificationStatus.setText("Result: complete")
 
         # message = QMessageBox()
         # message.setWindowTitle("hasilnya ngab")
@@ -767,6 +767,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.x = 0
         self.y = 0
         self.radius = 0
+
+        self.aiStatus=False
         
         self.data_collector = None
         self.cam = Camera()
@@ -897,6 +899,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.image_original = None
         self.image_cropped = None
+
+        self.create_default_folders()
         # self.classification=ImageProcessor()
 
 
@@ -906,6 +910,55 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # self.radioButton1.clicked.connect(lambda: self.changeCameraIndex(1))
         # self.radioButton2.clicked.connect(lambda: self.changeCameraIndex(2))
     
+    def create_folders(self, base_folder):
+        # Create a folder named with the creation date (excluding HH-MM-SS)
+        base_folder= r"C:\Users\Lyskq\Documents\Project_INSTEAD\result"
+        creation_date_folder = datetime.now().strftime("Data_%Y-%m-%d")
+        creation_date_path = os.path.join(base_folder, creation_date_folder)
+        
+
+        # Check if the folder already exists, creating it and subfolders if needed
+        os.makedirs(creation_date_path, exist_ok=True)
+
+        image_folder = os.path.join(creation_date_path, "images")
+        sensor_folder = os.path.join(creation_date_path, "sensor_results")
+        chart_folder = os.path.join(creation_date_path, "charts")
+
+        os.makedirs(image_folder, exist_ok=True)
+        os.makedirs(sensor_folder, exist_ok=True)
+        os.makedirs(chart_folder, exist_ok=True)
+
+        return creation_date_path, image_folder, sensor_folder, chart_folder
+    
+    def create_default_folders(self):
+        default_path = os.path.expanduser("~")
+        self.creation_date_path, _, _, _ = self.create_folders(default_path)
+
+    def save_media(self):
+        # Use the generated path as the default path
+        default_path = self.creation_date_path
+
+        # Create folders and get paths
+        creation_date_path, image_folder, sensor_folder, chart_folder = self.create_folders(default_path)
+
+        # Example: Save image (replace with actual image saving logic)
+        image_path = os.path.join(image_folder, "example_image.jpg")
+        # ... (Save image data to image_path)
+
+        # Example: Save sensor result (replace with actual sensor data saving logic)
+        sensor_path = os.path.join(sensor_folder, "sensor_result.txt")
+        # ... (Save sensor data to sensor_path)
+
+        # Example: Save chart (replace with actual chart saving logic)
+        chart_path = os.path.join(chart_folder, "example_chart.png")
+        # ... (Save chart data to chart_path)
+
+        # Show the save dialog (optional for user-selected path)
+        save_dialog = QFileDialog(self)
+        save_dialog.setFileMode(QFileDialog.Directory)
+        save_dialog.setDirectory(creation_date_path)  # Set to the newly created folder
+        save_dialog.setWindowTitle("Save Media")
+        save_dialog.exec_()
 
     def select_image(self):
         # options = QFileDialog.Options()
@@ -928,12 +981,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             # self.classification.classify(data_path)
 
     def start_classification(self):
+        self.classificationStatus.setText("Result: on progress")
+
         if self.file_path:
             # data_path = rf"{self.data_path}"
             data_path = self.file_path.replace('\\', '/')
 
+            image = cv.imread(data_path)
+            image=cv.cvtColor(image,cv.COLOR_BGR2RGB)
+            height, width, channel = image.shape
+            bytes_per_line = 3 * width
+            q_img = QImage(image.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(q_img)
+            self.showPreview.setPixmap(pixmap)
+
             message = QMessageBox()
-            message.setWindowTitle("You sure wnat to process this file?")
+            message.setWindowTitle("You sure want to process this file?")
             message.setText(data_path)
             message.setIcon(QMessageBox.Information)
             message.setStandardButtons(QMessageBox.Ok)
@@ -1215,6 +1278,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             pixmap = QPixmap.fromImage(q_img)
             self.cropResult.setPixmap(pixmap)
 
+
     def alphaImage(self, q_image_cropped):
         q_image_alpha = QImage(q_image_cropped.size(), QImage.Format_ARGB32)
         q_image_alpha.fill(QColor(0, 0, 0, 0))
@@ -1434,8 +1498,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.last_name = self.sample_name
             self.shot_count = 1
 
+        default_directory = r"C:\Users\Lyskq\Documents\Project_INSTEAD\result"
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
+
+        # saveFile_dialog = QFileDialog(self)
+        # saveFile_dialog.setOptions(options)
+        # saveFile_dialog.setDirectory(default_directory)
 
         suggested_file_name = self.get_suggested_file_name()
 
