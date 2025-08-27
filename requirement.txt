@@ -1,0 +1,10 @@
+opencv-python
+PyQt5
+matplotlib
+pyinstaller
+tqdm
+pyserial
+pandas
+tensorflow
+rembg
+onnxruntime
