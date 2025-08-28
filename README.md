@@ -1,2 +1,2 @@
 # Project-INSTEAD
-Project klasifikasi teh menggunakan Teensy dan Kamera
+Pengembangan metode image processing untuk INSTeaD
